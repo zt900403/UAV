@@ -13,10 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        maindialog.cpp \
-    components/rOg_image.cpp
+    components/rOg_image.cpp \
+    mainwindow.cpp \
+    utils/json.cpp
 
-HEADERS  += maindialog.h \
-    components/rOg_image.h
+HEADERS  += \
+    components/rOg_image.h \
+    mainwindow.h \
+    utils/json.h
 
-FORMS    += maindialog.ui
+FORMS    += \
+    mainwindow.ui

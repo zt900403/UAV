@@ -41,12 +41,8 @@ MainDialog::MainDialog(QWidget *parent) :
 //    painter2.end();
     ui->radarLabel->setPixmap(radarPixmap);
 
-    ui->accelerator->setMaximum(100);
-    ui->accelerator->setMinimum(0);
-    ui->accelerator->setSingleStep(20);
-    ui->accelerator->setTickPosition(QSlider::TicksRight);
-
     QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(on_rollAndPitch(float, float)));
+
 }
 
 MainDialog::~MainDialog()
