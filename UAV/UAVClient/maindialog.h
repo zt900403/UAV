@@ -16,7 +16,7 @@ public:
     ~MainDialog();
 
 private slots:
-
+    void on_rollAndPitch(float roll, float pitch);
     void on_fireButton_clicked();
 
 

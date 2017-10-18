@@ -23,6 +23,7 @@ private:
     bool pointInRect(const QPoint &point, const QRect &rect);
     int distBetween2Points(const QPoint &p1, const QPoint &p2);
 signals:
+    void rollAndPitch(float roll, float pitch);
 
 public slots:
 

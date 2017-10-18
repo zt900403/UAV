@@ -4,6 +4,8 @@
 #include <QMouseEvent>
 #include <cmath>
 
+
+
 AircraftController::AircraftController(QWidget *parent)
     : QWidget(parent)
     , m_mouseLeftPressed(false)
@@ -72,21 +74,27 @@ void AircraftController::mousePressEvent(QMouseEvent *event)
 
 void AircraftController::mouseMoveEvent(QMouseEvent *event)
 {
-    if (m_mouseLeftPressed && m_redballClicked) {
+    if (m_mouseLeftPressed ) {
         QPoint point = event->pos();
         QPoint widgetCenter = rect().center();
         QPoint redCenter = m_redballLeftTop;
         redCenter += QPoint(m_redball.width() / 2, m_redball.height() / 2);
-        if (distBetween2Points(widgetCenter, redCenter) <= m_panel.width() / 2) {
-            int x = point.x() - m_redball.width() / 2;
-            int y = point.y() - m_redball.height() / 2;
-            m_redballLeftTop.setX(x);
-            m_redballLeftTop.setY(y);
+        int x,y;
+
+        if (distBetween2Points(widgetCenter, point) <= m_panel.width() / 2) {
+            x = point.x() - m_redball.width() / 2;
+            y = point.y() - m_redball.height() / 2;
         } else {
             //当红点圆心超出大圆圆心时更新红点圆心在大圆边界上
-
+            x = redCenter.x()+(point.x()-widgetCenter.x())*(m_panel.width() / 2/distBetween2Points(point, widgetCenter)) - m_redball.width() / 2;
+            y = redCenter.y()+(point.y()-widgetCenter.y())*(m_panel.height() / 2/distBetween2Points(point, widgetCenter)) - m_redball.height() / 2;
         }
+        m_redballLeftTop.setX(x);
+        m_redballLeftTop.setY(y);
         update();
+        emit rollAndPitch((double)((redCenter - widgetCenter).x() * 90 / (m_panel.width() / 2)),-(double)((redCenter - widgetCenter).y() * 90 / m_panel.height() / 2));
+        //qDebug("%d,%d",(redCenter - widgetCenter).x() * 90 / (m_panel.width() / 2),-(redCenter - widgetCenter).y() * 90 / (m_panel.width() / 2));
+
     }
 }
 
