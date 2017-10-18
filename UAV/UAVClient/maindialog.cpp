@@ -15,8 +15,8 @@ MainDialog::MainDialog(QWidget *parent) :
 //    timer->start(1000);
     ui->weapenTreeWidget->setCurrentIndex(QModelIndex());
 
-    m_timerId = startTimer(1000 / 30);
-    m_time.start();
+    //m_timerId = startTimer(1000 / 30);
+    //m_time.start();
 
     ui->cameraButton->setButtonStyle(SwitchButton::ButtonStyle_CircleIn);
     ui->cameraButton->setText("Off", "On");
@@ -41,16 +41,22 @@ MainDialog::MainDialog(QWidget *parent) :
 //    painter2.end();
     ui->radarLabel->setPixmap(radarPixmap);
 
-//    ui->accelerator->setMaximum(100);
-//    ui->accelerator->setMinimum(0);
-//    ui->accelerator->setSingleStep(20);
-//    ui->accelerator->setTickPosition(QSlider::TicksRight);
+    QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(on_rollAndPitch(float, float)));
+
 }
 
 MainDialog::~MainDialog()
 {
     delete ui;
     if (m_timerId) killTimer(m_timerId);
+    QObject::disconnect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(on_rollAndPitch(float, float)));
+}
+
+void MainDialog::on_rollAndPitch(float roll, float pitch)
+{
+    ui->widgetPFD->setRoll(roll);
+    ui->widgetPFD->setPitch(pitch);
+    ui->widgetPFD->update();
 }
 
 

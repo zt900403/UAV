@@ -246,7 +246,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="6,1">
           <item>
-           <widget class="AircraftController" name="widget" native="true"/>
+           <widget class="AircraftController" name="UAV_rollAndPitchController" native="true"/>
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_6">
