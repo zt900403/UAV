@@ -92,7 +92,7 @@ void AircraftController::mouseMoveEvent(QMouseEvent *event)
         m_redballLeftTop.setX(x);
         m_redballLeftTop.setY(y);
         update();
-        emit rollAndPitch((double)((redCenter - widgetCenter).x() * 90 / (m_panel.width() / 2)),-(double)((redCenter - widgetCenter).y() * 90 / m_panel.height() / 2));
+        emit rollAndPitch((double)((redCenter - widgetCenter).x() * 90 / (m_panel.width() / 2)),-(double)((redCenter - widgetCenter).y() * 90 / (m_panel.height() / 2)));
         //qDebug("%d,%d",(redCenter - widgetCenter).x() * 90 / (m_panel.width() / 2),-(redCenter - widgetCenter).y() * 90 / (m_panel.width() / 2));
 
     }

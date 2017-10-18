@@ -18,12 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
 
-    QString uavtypeDir = m_appDir.relativeFilePath("./config/uavtype.json");
-    qDebug() << uavtypeDir;
-    QString uavtypeJson = readFile(uavtypeDir);
-    if (uavtypeJson.isEmpty()) {
-        qFatal("Coudl not read uavtype.json file!");
-    }
+//    QString uavtypeDir = m_appDir.relativeFilePath("./config/uavtype.json");
+//    qDebug() << uavtypeDir;
+//    QString uavtypeJson = readFile(uavtypeDir);
+//    if (uavtypeJson.isEmpty()) {
+//        qFatal("Coudl not read uavtype.json file!");
+//    }
 
 }
 
