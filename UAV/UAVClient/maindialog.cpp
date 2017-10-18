@@ -41,10 +41,10 @@ MainDialog::MainDialog(QWidget *parent) :
 //    painter2.end();
     ui->radarLabel->setPixmap(radarPixmap);
 
-    ui->accelerator->setMaximum(100);
-    ui->accelerator->setMinimum(0);
-    ui->accelerator->setSingleStep(20);
-    ui->accelerator->setTickPosition(QSlider::TicksRight);
+//    ui->accelerator->setMaximum(100);
+//    ui->accelerator->setMinimum(0);
+//    ui->accelerator->setSingleStep(20);
+//    ui->accelerator->setTickPosition(QSlider::TicksRight);
 }
 
 MainDialog::~MainDialog()
