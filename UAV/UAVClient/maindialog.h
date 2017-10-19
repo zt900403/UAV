@@ -20,6 +20,8 @@ private slots:
     void on_fireButton_clicked();
 
 
+    void on_yawSlider_valueChanged(int value);
+
 protected:
     void timerEvent(QTimerEvent *event);
 

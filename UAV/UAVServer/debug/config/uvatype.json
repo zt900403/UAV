@@ -1,0 +1,51 @@
+{
+	"uavs": [{
+			"name": "微型UAV1",
+			"weight": 10,
+			"voyage": 10,
+			"flightHeight": 250,
+			"flyEndurance": 0.5,
+			"maxSpeed": 30,
+			"acceleration": 0.5,
+			"loadWeight": 2,
+			"imageFile": "UAV-001.png",
+			"description": "微型UAV1 载重10KG",
+			"weapon": null
+		},
+		{
+			"name": "近程UAV2",
+			"weight": 50,
+			"voyage": 50,
+			"flightHeight": 1000,
+			"endurance": 2,
+			"maxSpeed": 100,
+			"acceleration": 5,
+			"imageFile": "UAV-002.png",
+			"description": "进程UAV2 载重50KG",
+			"weapon": [
+				"火炮"
+			]
+		}
+	],
+	"weapons": [{
+			"name": "自杀式",
+			"R_L": "无人机",
+			"weight": "inf.",
+			"guidedType": null,
+			"fieldOfFire": 1,
+			"killRadius": 1,
+			"imageFile": "",
+			"description": ""
+		},
+		{
+			"name": "火炮",
+			"R_L": "R 0.2 – L 0.6",
+			"weight": 20,
+			"guidedType": null,
+			"fieldOfFire": 1,
+			"killRadius": 0.2,
+			"imageFile": "",
+			"description": ""
+		}
+	]
+}

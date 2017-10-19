@@ -2,8 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QDir>
 
+class QDir;
+class QListWidgetItem;
+class QLabel;
 
 namespace Ui {
 class MainWindow;
@@ -17,11 +19,24 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    enum MyDataRoles {
+       MyImgRole = Qt:: UserRole + 10,
+       MyDescRole = Qt::UserRole + 11
+    };
+
+private slots:
+
+    void on_uavslistWidget_itemClicked(QListWidgetItem *item);
+
+    void on_pushButton_clicked();
+
 private:
     QString readFile(const QString &filename);
+    QDir directoryOf(const QString &subdir);
+    bool updateUavMetaDataGroup();
+    void labelDisplayImage(QLabel *label, const QString &filename);
 private:
     Ui::MainWindow *ui;
-    QDir m_appDir;
 };
 
 #endif // MAINWINDOW_H

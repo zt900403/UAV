@@ -11,9 +11,8 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForLocale(codec);
     QTextCodec::setCodecForCStrings(codec);
 
-
     MainWindow w;
-    w.show();
+    w.showMaximized();
 
     return a.exec();
 }

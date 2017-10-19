@@ -59,7 +59,7 @@ void rOg_image::showContextMenu(const QPoint & pos)
     QPoint globalPos = mapToGlobal(pos);
     // Create the menu and add action
     QMenu contextMenu;
-    contextMenu.addAction("Reset view", this, SLOT(fitImage()));
+    contextMenu.addAction("重置画面", this, SLOT(fitImage()));
     // Display the menu
     contextMenu.exec(globalPos);
 }

@@ -292,16 +292,19 @@
           <item>
            <widget class="QSlider" name="yawSlider">
             <property name="minimum">
-             <number>-90</number>
+             <number>-360</number>
             </property>
             <property name="maximum">
-             <number>90</number>
+             <number>360</number>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="tickPosition">
              <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>20</number>
             </property>
            </widget>
           </item>

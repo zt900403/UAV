@@ -8,7 +8,8 @@
 			"maxSpeed": 30,
 			"acceleration": 0.5,
 			"loadWeight": 2,
-			"imageDir": "",
+			"imageFile": "UAV-001.png",
+			"description": "微型UAV1 载重10KG",
 			"weapon": null
 		},
 		{
@@ -19,8 +20,8 @@
 			"endurance": 2,
 			"maxSpeed": 100,
 			"acceleration": 5,
-			"loadWeight": 10,
-			"imageDir": "",
+			"imageFile": "UAV-002.png",
+			"description": "进程UAV2 载重50KG",
 			"weapon": [
 				"火炮"
 			]
@@ -33,7 +34,8 @@
 			"guidedType": null,
 			"fieldOfFire": 1,
 			"killRadius": 1,
-			"imageDir": ""
+			"imageFile": "",
+			"description": ""
 		},
 		{
 			"name": "火炮",
@@ -42,7 +44,8 @@
 			"guidedType": null,
 			"fieldOfFire": 1,
 			"killRadius": 0.2,
-			"imageDir": ""
+			"imageFile": "",
+			"description": ""
 		}
 	]
 }

@@ -102,3 +102,9 @@ void MainDialog::on_fireButton_clicked()
     if (i)
         i->setData(1, Qt::DisplayRole, QString::number(i->data(1, Qt::DisplayRole).toInt() - 1));
 }
+
+void MainDialog::on_yawSlider_valueChanged(int value)
+{
+    ui->widgetPFD->setHeading(value);
+    ui->widgetPFD->update();
+}

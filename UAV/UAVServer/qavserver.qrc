@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/icos/Gear.ico</file>
+        <file>images/icos/uav.ico</file>
+        <file>images/icos/add.ico</file>
+        <file>images/icos/minus.ico</file>
+        <file>images/icos/x.ico</file>
+        <file>images/icos/save.ico</file>
+        <file>images/icos/arrow_left.ico</file>
+        <file>images/icos/arrow_right.ico</file>
+    </qresource>
+</RCC>
