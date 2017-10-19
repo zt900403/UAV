@@ -160,7 +160,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox"/>
+        <widget class="QComboBox" name="uavTypeComboBox"/>
        </item>
        <item>
         <spacer name="verticalSpacer_2">
@@ -212,7 +212,18 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="tableWidget_2"/>
+        <widget class="QTableWidget" name="currentWeaponTableWidget">
+         <column>
+          <property name="text">
+           <string>名称</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>数量</string>
+          </property>
+         </column>
+        </widget>
        </item>
       </layout>
      </item>
@@ -312,7 +323,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="tableWidget_3">
+        <widget class="QTableWidget" name="weaponTypeDataTableWidget">
          <column>
           <property name="text">
            <string>名称</string>

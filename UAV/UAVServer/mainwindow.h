@@ -31,8 +31,8 @@ private slots:
     void on_pushButton_clicked();
 
 private:
-    QString readFile(const QString &filename);
-    QDir directoryOf(const QString &subdir);
+//    QString readFile(const QString &filename);
+//    QDir directoryOf(const QString &subdir);
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QString &filename);
 private:

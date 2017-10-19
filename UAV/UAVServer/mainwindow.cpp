@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
+#include "utils/filesystem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QString imageDir = directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
+    QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
     QImage image(imageDir);
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
@@ -25,41 +26,41 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QString MainWindow::readFile(const QString &filename)
-{
-    QFile f(filename);
-    if (!f.open(QFile::ReadOnly | QFile::Text)) {
-        return QString();
-    } else {
-        QTextStream in(&f);
-        return in.readAll();
-    }
-}
+//QString MainWindow::readFile(const QString &filename)
+//{
+//    QFile f(filename);
+//    if (!f.open(QFile::ReadOnly | QFile::Text)) {
+//        return QString();
+//    } else {
+//        QTextStream in(&f);
+//        return in.readAll();
+//    }
+//}
 
-QDir MainWindow::directoryOf(const QString &subdir)
-{
-    QDir dir(QApplication::applicationDirPath());
+//QDir MainWindow::directoryOf(const QString &subdir)
+//{
+//    QDir dir(QApplication::applicationDirPath());
 
-#if defined(Q_OS_WIN)
-    if (dir.dirName().toLower() == "debug"
-            || dir.dirName().toLower() == "release"
-            || dir.dirName().toLower() == "bin")
-        dir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (dir.dirName() == "MacOS") {
-        dir.cdUp();
-        dir.cdUp();
-        dir.cdUp();
-    }
-#endif
-    dir.cd(subdir);
-    return dir;
-}
+//#if defined(Q_OS_WIN)
+//    if (dir.dirName().toLower() == "debug"
+//            || dir.dirName().toLower() == "release"
+//            || dir.dirName().toLower() == "bin")
+//        dir.cdUp();
+//#elif defined(Q_OS_MAC)
+//    if (dir.dirName() == "MacOS") {
+//        dir.cdUp();
+//        dir.cdUp();
+//        dir.cdUp();
+//    }
+//#endif
+//    dir.cd(subdir);
+//    return dir;
+//}
 
 bool MainWindow::updateUavMetaDataGroup()
 {
-    QString uavtypeDir = directoryOf("config").absoluteFilePath("uvatype.json");
-    QString uavtypeJson = readFile(uavtypeDir);
+    QString uavtypeDir = FileSystem::directoryOf("config").absoluteFilePath("uvatype.json");
+    QString uavtypeJson = FileSystem::readFile(uavtypeDir);
     if (uavtypeJson.isEmpty()) {
         qFatal("Could not read uavtype.json file!");
         return false;
@@ -91,7 +92,7 @@ bool MainWindow::updateUavMetaDataGroup()
 
 void MainWindow::labelDisplayImage(QLabel *label, const QString &filename)
 {
-    QString f = directoryOf("images/uavs").absoluteFilePath(filename);
+    QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(filename);
     QPixmap p(f);
     p = p.scaled(150, 150);
     label->setPixmap(p);

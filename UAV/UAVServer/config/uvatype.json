@@ -23,7 +23,10 @@
 			"imageFile": "UAV-002.png",
 			"description": "进程UAV2 载重50KG",
 			"weapon": [
-				"火炮"
+				{
+					"name": "火炮",
+					"amount": 10
+				}
 			]
 		}
 	],
