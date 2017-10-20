@@ -36,7 +36,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="addUAVTypeBtn">
          <property name="text">
           <string/>
          </property>
@@ -47,7 +47,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="delUAVTypeBtn">
          <property name="text">
           <string/>
          </property>
@@ -75,6 +75,24 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
+        <widget class="QTableWidget" name="uavTableWidget">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <column>
+          <property name="text">
+           <string>名称</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label">
          <property name="text">
           <string>无人机类型数据</string>
@@ -84,66 +102,12 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QTableWidget" name="uavTableWidget">
-         <column>
-          <property name="text">
-           <string>名称</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>自重(kg)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>航程(km)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>航高(m)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>续航(h)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>最高时速(km/h)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>提升加速度(km/s^2)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>载荷(kg)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>图片</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>描述</string>
-          </property>
-         </column>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,3,1,8,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,5,1,8,1">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,2,4,2,2">
        <item>
@@ -213,6 +177,15 @@
        </item>
        <item>
         <widget class="QTableWidget" name="currentWeaponTableWidget">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
          <column>
           <property name="text">
            <string>名称</string>
@@ -324,6 +297,15 @@
        </item>
        <item>
         <widget class="QTableWidget" name="weaponTypeDataTableWidget">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
          <column>
           <property name="text">
            <string>名称</string>
@@ -379,7 +361,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="addWeaponTypeBtn">
          <property name="text">
           <string/>
          </property>
@@ -390,7 +372,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="delWeaponTypeBtn">
          <property name="text">
           <string/>
          </property>

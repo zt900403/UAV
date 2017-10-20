@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="qavserver.qrc">
-    <normaloff>:/images/icos/uav.ico</normaloff>:/images/icos/uav.ico</iconset>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
     <item>
