@@ -85,11 +85,6 @@
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
-         <column>
-          <property name="text">
-           <string>名称</string>
-          </property>
-         </column>
         </widget>
        </item>
        <item>
@@ -140,7 +135,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="saveBtn">
          <property name="text">
           <string>保存</string>
          </property>
@@ -151,7 +146,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="cancelBtn">
          <property name="text">
           <string>取消</string>
          </property>
@@ -186,16 +181,6 @@
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
-         <column>
-          <property name="text">
-           <string>名称</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>数量</string>
-          </property>
-         </column>
         </widget>
        </item>
       </layout>
@@ -306,41 +291,6 @@
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
-         <column>
-          <property name="text">
-           <string>名称</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>尺寸(m)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>重量(kg)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>制导方式</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>有效射程(km)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>杀伤半径(m)</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>描述</string>
-          </property>
-         </column>
         </widget>
        </item>
       </layout>
