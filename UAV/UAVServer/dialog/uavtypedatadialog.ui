@@ -354,5 +354,38 @@
  <resources>
   <include location="../qavserver.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>saveBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>UAVTypeDataDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>19</x>
+     <y>361</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>UAVTypeDataDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>397</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

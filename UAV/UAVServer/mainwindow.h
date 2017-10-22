@@ -28,7 +28,7 @@ private slots:
 
     void on_uavslistWidget_itemClicked(QListWidgetItem *item);
 
-    void on_pushButton_clicked();
+    void on_changeUAVTypeBtn_clicked();
 
 private:
 //    QString readFile(const QString &filename);

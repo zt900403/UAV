@@ -41,6 +41,7 @@ private slots:
 
     void on_saveBtn_clicked();
 
+
 private:
     void createTableHeader(const QVector<QPair<QString, QString> > &vect,
                            QTableWidget *table, int columnCnt);

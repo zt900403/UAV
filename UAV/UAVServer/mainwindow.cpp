@@ -28,6 +28,8 @@ MainWindow::~MainWindow()
 
 bool MainWindow::updateUavMetaDataGroup()
 {
+    ui->uavslistWidget->clear();
+
     QString uavtypeDir = FileSystem::directoryOf("config").absoluteFilePath("uvatype.json");
     QString uavtypeJson = FileSystem::readFile(uavtypeDir);
     if (uavtypeJson.isEmpty()) {
@@ -63,7 +65,9 @@ void MainWindow::labelDisplayImage(QLabel *label, const QString &filename)
 {
     QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(filename);
     QPixmap p(f);
-    p = p.scaled(150, 150);
+    if (!p.isNull()) {
+        p = p.scaled(150, 150);
+    }
     label->setPixmap(p);
 }
 
@@ -76,8 +80,11 @@ void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
     labelDisplayImage(ui->uavImageLabel, i.toString());
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_changeUAVTypeBtn_clicked()
 {
     UAVTypeDataDialog d(this);
-    d.exec();
+    int result = d.exec();
+    if (result == QDialog::Accepted) {
+        updateUavMetaDataGroup();
+    }
 }

@@ -226,6 +226,7 @@ void UAVTypeDataDialog::saveFile(const QString &filename)
         stream << str << endl;
         file.flush();
         file.close();
+        QMessageBox::information(this, "成功", "保存完成!", QMessageBox::Ok);
     }
 
 }

@@ -63,7 +63,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="changeUAVTypeBtn">
                <property name="text">
                 <string>更改参数</string>
                </property>

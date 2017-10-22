@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,14 +17,22 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     utils/json.cpp \
     dialog/uavtypedatadialog.cpp \
-    utils/filesystem.cpp
+    utils/filesystem.cpp \
+    object/uav.cpp \
+    object/weapon.cpp \
+    net/uavtcpserver.cpp \
+    net/uavtcpsocket.cpp
 
 HEADERS  += \
     components/rOg_image.h \
     mainwindow.h \
     utils/json.h \
     dialog/uavtypedatadialog.h \
-    utils/filesystem.h
+    utils/filesystem.h \
+    object/uav.h \
+    object/weapon.h \
+    net/uavtcpserver.h \
+    net/uavtcpsocket.h
 
 FORMS    += \
     mainwindow.ui \
