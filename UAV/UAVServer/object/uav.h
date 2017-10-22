@@ -6,7 +6,17 @@
 class UAV
 {
 public:
-    UAV();
+    UAV(const QString &name,
+        const QString &description,
+        const QBitmap &bitmap,
+        float acceleration,
+        float flightHeight,
+        float flyEndurance,
+        float loadWeight,
+        float maxSpeed,
+        float voyage,
+        float weight,
+        const QMap<QString, int> weapon);
 
     float acceleration() const;
     void setAcceleration(float acceleration);

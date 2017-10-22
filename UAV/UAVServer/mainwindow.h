@@ -2,10 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <object/uav.h>
+#include <object/weapon.h>
 
+#include <QVector>
 class QDir;
 class QListWidgetItem;
 class QLabel;
+
 
 namespace Ui {
 class MainWindow;
@@ -31,12 +35,13 @@ private slots:
     void on_changeUAVTypeBtn_clicked();
 
 private:
-//    QString readFile(const QString &filename);
-//    QDir directoryOf(const QString &subdir);
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QString &filename);
+
 private:
     Ui::MainWindow *ui;
+    QVector<UAV> m_uavs;
+    QVector<Weapon> m_weapons;
 };
 
 #endif // MAINWINDOW_H

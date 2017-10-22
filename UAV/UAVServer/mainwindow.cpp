@@ -45,10 +45,25 @@ bool MainWindow::updateUavMetaDataGroup()
 
     QtJson::JsonArray uavs = result["uavs"].toList();
     foreach (QVariant var, uavs) {
-        QtJson::JsonObject uavsObj = var.toMap();
-        QString name = uavsObj["name"].toString();
-        QString imageFile = uavsObj["imageFile"].toString();
-        QString descStr = uavsObj["description"].toString();
+        QtJson::JsonObject obj = var.toMap();
+        QString name = obj["name"].toString();
+        QString imageFile = obj["imageFile"].toString();
+        QString descStr = obj["description"].toString();
+        float acc = obj["acceleration"].toFloat();
+        float fh = obj["flightHeight"].toFloat();
+        float fe = obj["flyEndurance"].toFloat();
+        float lw = obj["loadWeight"].toFloat();
+        float ms = obj["maxSpeed"].toFloat();
+        float v = obj["voyage"].toFloat();
+        float w = obj["weight"].toFloat();
+        QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(imageFile);
+        QPixmap p(f);
+        QMap<QString, int> weapon;
+        foreach (QVariant wn, uavs["weapon"].toList()) {
+            QtJson::JsonObject w = wn.toMap();
+            weapon[w["name"]] = w["amount"];
+        }
+
         QListWidgetItem *item= new QListWidgetItem(name);
         QVariant i;
         QVariant d;

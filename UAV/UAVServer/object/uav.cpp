@@ -1,8 +1,18 @@
 #include "uav.h"
 
-UAV::UAV()
+UAV::UAV(const QString &name, const QString &description, const QBitmap &bitmap, float acceleration, float flightHeight, float flyEndurance, float loadWeight, float maxSpeed, float voyage, float weight, const QMap<QString, int> weapon)
 {
-
+    setName(name);
+    setDescription(description);
+    setBitmap(bitmap);
+    setAcceleration(acceleration);
+    setFlightHeight(flightHeight);
+    setFlyEndurance(flyEndurance);
+    setLoadWeight(loadWeight);
+    setMaxSpeed(maxSpeed);
+    setVoyage(voyage);
+    setWeight(weight);
+    setWeapon(weapon);
 }
 
 float UAV::acceleration() const
@@ -43,16 +53,6 @@ float UAV::flyEndurance() const
 void UAV::setFlyEndurance(float flyEndurance)
 {
     m_flyEndurance = flyEndurance;
-}
-
-QString UAV::imageFile() const
-{
-    return m_imageFile;
-}
-
-void UAV::setImageFile(const QString &imageFile)
-{
-    m_imageFile = imageFile;
 }
 
 float UAV::loadWeight() const
