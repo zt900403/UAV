@@ -17,7 +17,7 @@ private slots:
 private:
     void sendUAVTypes();
 private:
-    quint16 nextBlockSize;
+    quint16 m_nextBlockSize;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
 };

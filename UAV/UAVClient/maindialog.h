@@ -16,17 +16,15 @@ public:
     ~MainDialog();
 
 private slots:
-    void on_rollAndPitch(float roll, float pitch);
+    void onRollAndPitch(float roll, float pitch);
     void on_fireButton_clicked();
-
-
     void on_yawSlider_valueChanged(int value);
 
-    void on_yawSlider_rangeChanged(int min, int max);
-
-    void on_acceleratorSlider_valueChanged(int value);
 protected:
     void timerEvent(QTimerEvent *event);
+
+private:
+    void initPFD();
 
 private:
     Ui::MainDialog *ui;

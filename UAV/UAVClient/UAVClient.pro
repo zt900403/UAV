@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui svg
+QT       += core gui svg network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,17 +18,24 @@ SOURCES += main.cpp\
     widgets/LayoutSquare.cpp \
     widgets/WidgetPFD.cpp \
     components/switchbutton.cpp \
-    components/aircraftcontroller.cpp
+    components/aircraftcontroller.cpp \
+    dialog/networkdialog.cpp \
+    object/uav.cpp \
+    object/weapon.cpp
 
 HEADERS  += maindialog.h \
     components/qfi_PFD.h \
     widgets/LayoutSquare.h \
     widgets/WidgetPFD.h \
     components/switchbutton.h \
-    components/aircraftcontroller.h
+    components/aircraftcontroller.h \
+    dialog/networkdialog.h \
+    object/uav.h \
+    object/weapon.h
 
 FORMS    += maindialog.ui \
-    widgets/WidgetPFD.ui
+    widgets/WidgetPFD.ui \
+    dialog/networkdialog.ui
 
 DISTFILES += \
     images/pfd/pfd.svg \

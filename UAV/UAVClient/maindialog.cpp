@@ -14,8 +14,11 @@ MainDialog::MainDialog(QWidget *parent) :
     m_realTime(0.0f)
 {
     ui->setupUi(this);
+
+    initPFD();
+
     QTimer *timer = new QTimer(this);
-    //connect(timer, SIGNAL(timeout()), this, SLOT(pfd_update()));
+
     timer->start(1000);
     ui->weapenTreeWidget->setCurrentIndex(QModelIndex());
 
@@ -45,7 +48,7 @@ MainDialog::MainDialog(QWidget *parent) :
 //    painter2.end();
     ui->radarLabel->setPixmap(radarPixmap);
 
-    QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(on_rollAndPitch(float, float)));
+    QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(onRollAndPitch(float, float)));
 
 }
 
@@ -53,10 +56,10 @@ MainDialog::~MainDialog()
 {
     delete ui;
     if (m_timerId) killTimer(m_timerId);
-    QObject::disconnect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(on_rollAndPitch(float, float)));
+//    QObject::disconnect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(onRollAndPitch(float, float)));
 }
 
-void MainDialog::on_rollAndPitch(float roll, float pitch)
+void MainDialog::onRollAndPitch(float roll, float pitch)
 {
     ui->widgetPFD->setRoll(roll);
     ui->widgetPFD->setPitch(pitch);
@@ -74,34 +77,46 @@ void MainDialog::timerEvent(QTimerEvent *event)
     float timeStep = m_time.restart();
     m_realTime = m_realTime + timeStep / 1000.0f;
 
-    float heading = 0.0f;
-
-    float pressure = 0.0f;
+//    float heading = 0.0f;
+//    float pressure = 0.0f;
     float machNo = 0.0f;
     float altitude = 0.0f;
     float climbRate = 0.0f;
+//    pressure = 2.0f * sin(m_realTime / 20.0f);
 
     Status_roll = 180.0f * sin(m_realTime / 10.0f);
-
-    heading = 360.0f * sin(m_realTime / 40.0f);
+//    heading = 360.0f * sin(m_realTime / 40.0f);
     float horizontalSpeed;
     float seedtmp = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
     airspeed = (airspeed + seedtmp) > 125.0f ? (airspeed +seedtmp) : 125.0f;
     altitude = altitude + airspeed * sin(Status_pitch/360*2*3.1415926);
     horizontalSpeed = airspeed * cos(Status_pitch/360*2*3.1415926);
 
-    pressure = 2.0f * sin(m_realTime / 20.0f);
     machNo = airspeed / 650.0f;
 
     climbRate = 650.0f * sin(m_realTime / 20.0f);
-    ui->speedEdit->setText(QString::number(airspeed));
 
+    ui->speedEdit->setText(QString::number(airspeed));
     ui->widgetPFD->setAirspeed(airspeed);
-    ui->widgetPFD->setPressure(pressure);
+//    ui->widgetPFD->setPressure(pressure);
     ui->widgetPFD->setMachNo(machNo);
     ui->widgetPFD->setAltitude(altitude);
     ui->widgetPFD->setClimbRate(climbRate);
     ui->widgetPFD->update();
+}
+
+void MainDialog::initPFD()
+{
+    WidgetPFD *pfd = ui->widgetPFD;
+    pfd->setAirspeed(0.0f);
+    pfd->setRoll(0.0f);
+    pfd->setHeading(0.0f);
+    pfd->setPitch(0.0f);
+    pfd->setMachNo(0.0f);
+    pfd->setClimbRate(0.0f);
+    pfd->setAltitude(0.0f);
+    pfd->setPressure(0.0f);
+    pfd->update();
 }
 
 
