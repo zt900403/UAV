@@ -1,10 +1,10 @@
 #include "uav.h"
 
-UAV::UAV(const QString &name, const QString &description, const QBitmap &bitmap, float acceleration, float flightHeight, float flyEndurance, float loadWeight, float maxSpeed, float voyage, float weight, const QMap<QString, int> weapon)
+UAV::UAV(const QString &name, const QString &description, const QPixmap &pixmap, float acceleration, float flightHeight, float flyEndurance, float loadWeight, float maxSpeed, float voyage, float weight, const QMap<QString, int> weapon)
 {
     setName(name);
     setDescription(description);
-    setBitmap(bitmap);
+    setPixmap(pixmap);
     setAcceleration(acceleration);
     setFlightHeight(flightHeight);
     setFlyEndurance(flyEndurance);
@@ -115,12 +115,45 @@ void UAV::setWeapon(const QMap<QString, int> &weapon)
     m_weapon = weapon;
 }
 
-QBitmap UAV::bitmap() const
+QPixmap UAV::pixmap() const
 {
-    return m_bitmap;
+    return m_pixmap;
 }
 
-void UAV::setBitmap(const QBitmap &bitmap)
+void UAV::setPixmap(const QPixmap &pixmap)
 {
-    m_bitmap = bitmap;
+    m_pixmap = pixmap;
+}
+
+QDataStream &operator<<(QDataStream &out, const UAV &uav)
+{
+    out << uav.name() << uav.description()
+        << uav.acceleration()
+        << uav.flightHeight()
+        << uav.flyEndurance()
+        << uav.loadWeight()
+        << uav.maxSpeed()
+        << uav.voyage()
+        << uav.weight()
+        << uav.pixmap()
+        << uav.weapon();
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, UAV &uav)
+{
+    float acc;
+    QString d;
+    float fh;
+    float fe;
+    QPixmap p;
+    float l;
+    float m;
+    QString n;
+    float v;
+    float w;
+    QMap<QString, int> weapon;
+    in >> n >> d >> acc >> fh >> fe >> l >> m >> v >> w >> p >> weapon;
+    uav = UAV(n, d, p, acc, fh, fe, l, m, v, w, weapon);
+    return in;
 }

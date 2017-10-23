@@ -1,7 +1,9 @@
 #include "uavtcpsocket.h"
 
-UAVTcpSocket::UAVTcpSocket(QObject *parent)
-    : QTcpSocket(parent)
+UAVTcpSocket::UAVTcpSocket(QVector<UAV> uavs, QVector<Weapon> weapons, QObject *parent)
+       : QTcpSocket(parent)
+    , m_uavs(uavs)
+    , m_weapons(weapons)
 {
     connect(this, SIGNAL(readyRead()), this, SLOT(readClient()));
     connect(this, SIGNAL(disconnected()), this, SLOT(deleteLater()));
@@ -20,14 +22,13 @@ void UAVTcpSocket::readClient()
     if (bytesAvailable() < nextBlockSize)
         return;
 
-    quint8 requestType;
+    QString requestType;
     in >> requestType;
-    switch(requestType) {
-        case 'P0' :
-            break;
-        default:
-            QDataStream out(this);
-            out << quint16(0xFFFF);
+    if (requestType == "P0") {
+        QDataStream out(this);
+        out << QString("R0")
+            << m_uavs
+            << quint16(0xFFFF);
     }
-
+    close();
 }

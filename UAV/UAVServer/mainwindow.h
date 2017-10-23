@@ -5,6 +5,7 @@
 #include <object/uav.h>
 #include <object/weapon.h>
 
+#include "utils/json.h"
 #include <QVector>
 class QDir;
 class QListWidgetItem;
@@ -36,7 +37,9 @@ private slots:
 
 private:
     bool updateUavMetaDataGroup();
-    void labelDisplayImage(QLabel *label, const QString &filename);
+    void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
+    void instantiateUAVs(const QtJson::JsonArray &uavs);
+    void instantiateWeapons(const QtJson::JsonArray &weapons);
 
 private:
     Ui::MainWindow *ui;

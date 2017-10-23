@@ -1,8 +1,13 @@
 #include "weapon.h"
-
-Weapon::Weapon()
+Weapon::Weapon(const QString &name, const QString &description, const QString &R_L, const QString &guidedType, float fieldOfFire, float killRadius, float weight)
 {
-
+    setName(name);
+    setDescription(description);
+    setR_L(R_L);
+    setGuidedType(guidedType);
+    setFieldOfFire(fieldOfFire);
+    setKillRadius(killRadius);
+    setWeight(weight);
 }
 
 QString Weapon::R_L() const
@@ -55,22 +60,49 @@ void Weapon::setKillRadius(float killRadius)
     m_killRadius = killRadius;
 }
 
-QString Weapon::getName() const
+QString Weapon::name() const
 {
-    return name;
+    return m_name;
 }
 
 void Weapon::setName(const QString &value)
 {
-    name = value;
+    m_name = value;
 }
 
-float Weapon::getWeight() const
+float Weapon::weight() const
 {
-    return weight;
+    return m_weight;
 }
 
 void Weapon::setWeight(float value)
 {
-    weight = value;
+    m_weight = value;
+}
+
+QDataStream &operator<<(QDataStream &out, const Weapon &weapon)
+{
+    out << weapon.name()
+        << weapon.description()
+        << weapon.R_L()
+        << weapon.guidedType()
+        << weapon.fieldOfFire()
+        << weapon.killRadius()
+        << weapon.weight();
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, Weapon &weapon)
+{
+    QString R_L;
+    QString d;
+    float f;
+    QString g;
+    float k;
+    QString n;
+    float w;
+
+    in >> n >> d >> R_L >> g >> f >> k >> w;
+    weapon = Weapon(n, d, R_L, g, f, k ,w);
+    return in;
 }

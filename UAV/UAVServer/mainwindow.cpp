@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "utils/json.h"
 #include "dialog/uavtypedatadialog.h"
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
 #include "utils/filesystem.h"
+#include "object/uav.h"
+#include "object/weapon.h"
+#include "net/uavtcpserver.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,6 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
 
     updateUavMetaDataGroup();
+    UAVTcpServer server(m_uavs, m_weapons, this);
+    if (!server.listen(QHostAddress::Any, 10666)) {
+        QMessageBox::critical(this, tr("错误"), tr("端口监听失败, 请确定其他程序没有使用10666端口!"),
+                              QMessageBox::Ok);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -44,6 +52,44 @@ bool MainWindow::updateUavMetaDataGroup()
     }
 
     QtJson::JsonArray uavs = result["uavs"].toList();
+    instantiateUAVs(uavs);
+
+    QVectorIterator<UAV> i(m_uavs);
+    while(i.hasNext()) {
+        UAV u = i.next();
+        QString name = u.name();
+        QPixmap pixmap = u.pixmap();
+        QString desc = u.description();
+
+        QListWidgetItem *item= new QListWidgetItem(name);
+        QVariant i;
+        QVariant d;
+        i.setValue(pixmap);
+        d.setValue(desc);
+        item->setData(MyImgRole, i);
+        item->setData(MyDescRole, d);
+        ui->uavslistWidget->addItem(item);
+    }
+
+    QtJson::JsonArray weapons = result["weapons"].toList();
+    instantiateWeapons(weapons);
+    return true;
+}
+
+void MainWindow::labelDisplayImage(QLabel *label, const QPixmap &pixmap)//const QString &filename)
+{
+//    QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(filename);
+//    QPixmap p(f);
+    QPixmap p;
+    if (!pixmap.isNull()) {
+        p = pixmap.scaled(150, 150);
+    }
+    label->setPixmap(p);
+}
+
+void MainWindow::instantiateUAVs(const QtJson::JsonArray &uavs)
+{
+    m_uavs.clear();
     foreach (QVariant var, uavs) {
         QtJson::JsonObject obj = var.toMap();
         QString name = obj["name"].toString();
@@ -59,31 +105,32 @@ bool MainWindow::updateUavMetaDataGroup()
         QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(imageFile);
         QPixmap p(f);
         QMap<QString, int> weapon;
-        foreach (QVariant wn, uavs["weapon"].toList()) {
+        QtJson::JsonArray weapons = obj["weapon"].toList();
+        foreach (QVariant wn, weapons) {
             QtJson::JsonObject w = wn.toMap();
-            weapon[w["name"]] = w["amount"];
+            weapon[w["name"].toString()] = w["amount"].toInt();
         }
-
-        QListWidgetItem *item= new QListWidgetItem(name);
-        QVariant i;
-        QVariant d;
-        i.setValue(imageFile);
-        d.setValue(descStr);
-        item->setData(MyImgRole, i);
-        item->setData(MyDescRole, d);
-        ui->uavslistWidget->addItem(item);
+        UAV u(name, descStr, p, acc, fh, fe, lw, ms, v, w, weapon);
+        m_uavs.append(u);
     }
-    return true;
 }
 
-void MainWindow::labelDisplayImage(QLabel *label, const QString &filename)
+void MainWindow::instantiateWeapons(const QtJson::JsonArray &weapons)
 {
-    QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(filename);
-    QPixmap p(f);
-    if (!p.isNull()) {
-        p = p.scaled(150, 150);
+    m_weapons.clear();
+    foreach(QVariant var, weapons) {
+        QtJson::JsonObject obj = var.toMap();
+        QString name = obj["name"].toString();
+        QString desc = obj["description"].toString();
+        QString R_L = obj["R_L"].toString();
+        QString g = obj["guidedType"].toString();
+        float f = obj["fieldOfFire"].toFloat();
+        float k = obj["killRadius"].toFloat();
+        float weight = obj["weight"].toFloat();
+
+        Weapon w(name, desc, R_L, g, f, k, weight);
+        m_weapons.append(w);
     }
-    label->setPixmap(p);
 }
 
 void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
@@ -92,7 +139,7 @@ void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
     QVariant d = item->data(MyDescRole);
 
     ui->uavDescriptionLabel->setText(d.toString());
-    labelDisplayImage(ui->uavImageLabel, i.toString());
+    labelDisplayImage(ui->uavImageLabel, i.value<QPixmap>());
 }
 
 void MainWindow::on_changeUAVTypeBtn_clicked()

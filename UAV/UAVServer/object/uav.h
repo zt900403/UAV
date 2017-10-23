@@ -2,21 +2,21 @@
 #define UAV_H
 #include <QString>
 #include <QMap>
-#include <QBitmap>
+#include <QPixmap>
 class UAV
 {
 public:
-    UAV(const QString &name,
-        const QString &description,
-        const QBitmap &bitmap,
-        float acceleration,
-        float flightHeight,
-        float flyEndurance,
-        float loadWeight,
-        float maxSpeed,
-        float voyage,
-        float weight,
-        const QMap<QString, int> weapon);
+    UAV(const QString &name = QString(),
+        const QString &description = QString(),
+        const QPixmap &pixmap = QPixmap(),
+        float acceleration = 0.0f,
+        float flightHeight = 0.0f,
+        float flyEndurance = 0.0f,
+        float loadWeight = 0.0f,
+        float maxSpeed = 0.0f,
+        float voyage = 0.0f,
+        float weight = 0.0f,
+        const QMap<QString, int> weapon = QMap<QString, int>());
 
     float acceleration() const;
     void setAcceleration(float acceleration);
@@ -48,15 +48,14 @@ public:
     QMap<QString, int> weapon() const;
     void setWeapon(const QMap<QString, int> &weapon);
 
-    QBitmap bitmap() const;
-    void setBitmap(const QBitmap &bitmap);
-
+    QPixmap pixmap() const;
+    void setPixmap(const QPixmap &pixmap);
 private:
     float m_acceleration;
     QString m_description;
     float m_flightHeight;
     float m_flyEndurance;
-    QBitmap m_bitmap;
+    QPixmap m_pixmap;
     float m_loadWeight;
     float m_maxSpeed;
     QString m_name;
@@ -65,4 +64,6 @@ private:
     QMap<QString, int> m_weapon;
 };
 
+QDataStream &operator<<(QDataStream &out, const UAV &uav);
+QDataStream &operator>>(QDataStream &in, UAV &uav);
 #endif // UAV_H

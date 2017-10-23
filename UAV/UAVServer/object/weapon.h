@@ -1,11 +1,14 @@
 #ifndef WEAPON_H
 #define WEAPON_H
+#include <QObject>
 #include <QString>
-
+#include <QDataStream>
 class Weapon
 {
 public:
-    Weapon();
+    Weapon(const QString &name = QString(), const QString &description = QString(),
+           const QString &R_L = QString(), const QString &guidedType = QString(),
+           float fieldOfFire = 0.0f, float killRadius = 0.0f, float weight = 0.0f);
 
     QString R_L() const;
     void setR_L(const QString &R_L);
@@ -22,10 +25,10 @@ public:
     float killRadius() const;
     void setKillRadius(float killRadius);
 
-    QString getName() const;
+    QString name() const;
     void setName(const QString &value);
 
-    float getWeight() const;
+    float weight() const;
     void setWeight(float value);
 
 private:
@@ -34,8 +37,9 @@ private:
     float m_fieldOfFire;
     QString m_guidedType;
     float m_killRadius;
-    QString name;
-    float weight;
+    QString m_name;
+    float m_weight;
 };
-
+QDataStream &operator<<(QDataStream &out, const Weapon &weapon);
+QDataStream &operator>>(QDataStream &in, Weapon &weapon);
 #endif // WEAPON_H
