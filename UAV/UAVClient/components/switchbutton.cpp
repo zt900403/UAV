@@ -4,10 +4,11 @@
 #include "qtimer.h"
 #include "qdebug.h"
 
+
 SwitchButton::SwitchButton(QWidget *parent): QWidget(parent)
 {
     checked = false;
-    buttonStyle    = ButtonStyle_Rect;
+    buttonStyle = ButtonStyle_Rect;
 
     bgColorOff = QColor(225, 225, 225);
     bgColorOn = QColor(250, 250, 250);

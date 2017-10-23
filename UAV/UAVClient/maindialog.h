@@ -22,6 +22,9 @@ private slots:
 
     void on_yawSlider_valueChanged(int value);
 
+    void on_yawSlider_rangeChanged(int min, int max);
+
+    void on_acceleratorSlider_valueChanged(int value);
 protected:
     void timerEvent(QTimerEvent *event);
 
