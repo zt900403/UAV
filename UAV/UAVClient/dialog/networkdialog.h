@@ -6,6 +6,7 @@
 #include <QVector>
 #include "object/uav.h"
 #include "object/weapon.h"
+class QListWidgetItem;
 namespace Ui {
 class NetworkDialog;
 }
@@ -24,6 +25,9 @@ private slots:
     void error();
     void updateUAVWidgets();
     void on_connectToServerBtn_clicked();
+
+    void on_uavslistWidget_itemClicked(QListWidgetItem *item);
+
 private:
     void initWidgets();
     void closeConnection();
@@ -34,7 +38,7 @@ private:
     };
     Ui::NetworkDialog *ui;
     QTcpSocket m_tcpSocket;
-    quint16 m_nextBlockSize;
+    qint64 m_nextBlockSize;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
 };

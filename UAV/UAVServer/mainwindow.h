@@ -11,6 +11,7 @@ class QDir;
 class QListWidgetItem;
 class QLabel;
 
+class UAVTcpServer;
 
 namespace Ui {
 class MainWindow;
@@ -45,6 +46,7 @@ private:
     Ui::MainWindow *ui;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    UAVTcpServer *m_tcpserver;
 };
 
 #endif // MAINWINDOW_H

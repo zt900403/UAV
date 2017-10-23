@@ -1,5 +1,6 @@
 #ifndef UAVTCPSERVER_H
 #define UAVTCPSERVER_H
+#include <QtCore>
 #include <QTcpServer>
 #include <QVector>
 #include "object/uav.h"
@@ -8,9 +9,9 @@ class UAVTcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    UAVTcpServer(QVector<UAV> uavs, QVector<Weapon> weapons, QObject *parent = 0);
+    UAVTcpServer(QVector<UAV> uavs = QVector<UAV>(), QVector<Weapon> weapons = QVector<Weapon>(), QObject *parent = 0);
 
-public:
+private:
     void incomingConnection(int socketId);
 
 private:

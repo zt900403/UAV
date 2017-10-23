@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
 
     updateUavMetaDataGroup();
-    UAVTcpServer server(m_uavs, m_weapons, this);
-    if (!server.listen(QHostAddress::Any, 10666)) {
+    m_tcpserver = new UAVTcpServer(m_uavs, m_weapons, this);
+    if (!m_tcpserver->listen(QHostAddress::Any, 10666)) {
         QMessageBox::critical(this, tr("错误"), tr("端口监听失败, 请确定其他程序没有使用10666端口!"),
                               QMessageBox::Ok);
     }

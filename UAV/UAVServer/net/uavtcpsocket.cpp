@@ -15,7 +15,7 @@ void UAVTcpSocket::readClient()
     QDataStream in(this);
     in.setVersion(QDataStream::Qt_4_8);
     if (m_nextBlockSize == 0) {
-        if (bytesAvailable() < sizeof(quint16))
+        if (bytesAvailable() < sizeof(qint64))
             return;
         in >> m_nextBlockSize;
     }
@@ -28,15 +28,15 @@ void UAVTcpSocket::readClient()
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_4_8);
-        out << quint16(0)
+        out << qint64(0)
             << QString("R0")
             << m_uavs
             << m_weapons;
         out.device()->seek(0);
-        out << quint16(block.size() - sizeof(quint16));
+        out << qint64(block.size() - sizeof(qint64));
         write(block);
     }
     QDataStream out(this);
-    out << quint16(0xFFFF);
+    out << qint64(0xFFFF);
     close();
 }

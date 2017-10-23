@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QTextCodec>
+#include "net/uavtcpserver.h"
 
 int main(int argc, char *argv[])
 {

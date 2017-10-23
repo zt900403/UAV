@@ -37,9 +37,9 @@ void NetworkDialog::sendRequest()
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_8);
-    out << quint16(0) << QString("P0");
+    out << qint64(0) << QString("P0");
     out.device()->seek(0);
-    out << quint16(block.size() - sizeof(quint16));
+    out << qint64(block.size() - sizeof(qint64));
     m_tcpSocket.write(block);
 }
 
@@ -63,12 +63,12 @@ void NetworkDialog::updateUAVWidgets()
 
     forever {
         if (m_nextBlockSize == 0) {
-            if (m_tcpSocket.bytesAvailable() < sizeof(quint16))
+            if (m_tcpSocket.bytesAvailable() < sizeof(qint64))
                 break;
             in >> m_nextBlockSize;
         }
 
-        if (m_nextBlockSize== 0xFFFF) {
+        if (m_nextBlockSize == 0xFFFF) {
             closeConnection();
             break;
         }
@@ -78,7 +78,6 @@ void NetworkDialog::updateUAVWidgets()
 
         QString responseType;
         in >> responseType >> m_uavs >> m_weapons;
-
         QVectorIterator<UAV> i(m_uavs);
         while(i.hasNext()) {
             UAV u = i.next();
@@ -122,4 +121,13 @@ void NetworkDialog::on_connectToServerBtn_clicked()
     ui->ipLineEdit->setDisabled(true);
     ui->portLineEdit->setDisabled(true);
     m_nextBlockSize = 0;
+}
+
+
+void NetworkDialog::on_uavslistWidget_itemClicked(QListWidgetItem *item)
+{
+    QVariant i = item->data(MyImgRole);
+    QVariant d = item->data(MyDescRole);
+    QPixmap p = i.value<QPixmap>().scaled(150, 150);
+    ui->uavImageTextLabel->setPixmap(p);
 }
