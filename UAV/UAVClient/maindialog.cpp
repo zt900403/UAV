@@ -2,6 +2,10 @@
 #include "ui_maindialog.h"
 #include <math.h>
 #include <QtGui>
+float airspeed = 125.0f;
+float altitude = 5000.0f;
+float Status_pitch = 0.0f;
+float Status_roll = 0.0f;
 
 MainDialog::MainDialog(QWidget *parent) :
     QDialog(parent),
@@ -10,13 +14,13 @@ MainDialog::MainDialog(QWidget *parent) :
     m_realTime(0.0f)
 {
     ui->setupUi(this);
-//    QTimer *timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(pfd_update()));
-//    timer->start(1000);
+    QTimer *timer = new QTimer(this);
+    //connect(timer, SIGNAL(timeout()), this, SLOT(pfd_update()));
+    timer->start(1000);
     ui->weapenTreeWidget->setCurrentIndex(QModelIndex());
 
-    //m_timerId = startTimer(1000 / 30);
-    //m_time.start();
+    m_timerId = startTimer(1000 / 30);
+    m_time.start();
 
     ui->cameraButton->setButtonStyle(SwitchButton::ButtonStyle_CircleIn);
     ui->cameraButton->setText("Off", "On");
@@ -57,6 +61,10 @@ void MainDialog::on_rollAndPitch(float roll, float pitch)
     ui->widgetPFD->setRoll(roll);
     ui->widgetPFD->setPitch(pitch);
     ui->widgetPFD->update();
+    ui->rollEdit->setText( QString::number(roll));
+    ui->pitchEdit->setText(QString::number(pitch));
+    Status_pitch = pitch;
+    Status_roll = roll;
 }
 
 
@@ -65,27 +73,29 @@ void MainDialog::timerEvent(QTimerEvent *event)
     QDialog::timerEvent(event);
     float timeStep = m_time.restart();
     m_realTime = m_realTime + timeStep / 1000.0f;
-    float roll = 0.0f;
-    float pitch = 0.0f;
+
     float heading = 0.0f;
-    float airspeed = 0.0f;
+
     float pressure = 0.0f;
     float machNo = 0.0f;
     float altitude = 0.0f;
     float climbRate = 0.0f;
 
-    roll = 180.0f * sin(m_realTime / 10.0f);
-    pitch = 90.0f * sin(m_realTime / 20.0f);
+    Status_roll = 180.0f * sin(m_realTime / 10.0f);
+
     heading = 360.0f * sin(m_realTime / 40.0f);
-    airspeed = 125.0f * sin(m_realTime / 40.0f);
+    float horizontalSpeed;
+    float seedtmp = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
+    airspeed = (airspeed + seedtmp) > 125.0f ? (airspeed +seedtmp) : 125.0f;
+    altitude = altitude + airspeed * sin(Status_pitch/360*2*3.1415926);
+    horizontalSpeed = airspeed * cos(Status_pitch/360*2*3.1415926);
+
     pressure = 2.0f * sin(m_realTime / 20.0f);
     machNo = airspeed / 650.0f;
-    altitude = 9000.0f * sin(m_realTime / 40.0f);
-    climbRate = 650.0f * sin(m_realTime / 20.0f);
 
-    ui->widgetPFD->setRoll(roll);
-    ui->widgetPFD->setPitch(pitch);
-    ui->widgetPFD->setHeading(heading);
+    climbRate = 650.0f * sin(m_realTime / 20.0f);
+    ui->speedEdit->setText(QString::number(airspeed));
+
     ui->widgetPFD->setAirspeed(airspeed);
     ui->widgetPFD->setPressure(pressure);
     ui->widgetPFD->setMachNo(machNo);
@@ -107,4 +117,6 @@ void MainDialog::on_yawSlider_valueChanged(int value)
 {
     ui->widgetPFD->setHeading(value);
     ui->widgetPFD->update();
+    ui->yawEdit->setText(QString::number(value));
 }
+

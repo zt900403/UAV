@@ -342,7 +342,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="rollEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -373,7 +373,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="pitchEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -404,7 +404,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_3">
+           <widget class="QLineEdit" name="yawEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -435,7 +435,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_4">
+           <widget class="QLineEdit" name="speedEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -466,7 +466,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_5">
+           <widget class="QLineEdit" name="heightEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
