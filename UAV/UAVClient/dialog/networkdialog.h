@@ -34,6 +34,9 @@ public:
     QPair<int, QString> selected() const;
     void setSelected(const QPair<int, QString> &selected);
 
+    int id() const;
+    void setId(int id);
+
 private slots:
     void sendRequest();
     void connectionClosedByServer();
@@ -61,6 +64,7 @@ private:
     QString m_ip;
     int m_port;
     QPair<int, QString> m_selected;
+    int m_id;
 };
 
 #endif // NETWORKDIALOG_H

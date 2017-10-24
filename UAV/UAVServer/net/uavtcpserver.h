@@ -19,10 +19,12 @@ public:
 
 private:
     void incomingConnection(int socketId);
-
 private:
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    int m_id;
+    QMap<QString, int> m_ipIdMap;
+    QObject *m_parent;
 };
 
 #endif // UAVTCPSERVER_H

@@ -8,7 +8,6 @@ UAVStatus::UAVStatus(float roll,
                      float altitude,
                      float flyEnduranceHour,
                      float flyEnduranceKM,
-                     int index,
                      const QTime &time,
                      const QMap<QString, int> &weapon)
     : m_roll(roll)
@@ -19,7 +18,6 @@ UAVStatus::UAVStatus(float roll,
     , m_altitude(altitude)
     , m_flyEnduranceHour(flyEnduranceHour)
     , m_flyEnduranceKM(flyEnduranceKM)
-    , m_index(index)
     , m_time(time)
     , m_weapon(weapon)
 {
@@ -126,16 +124,6 @@ void UAVStatus::setWeapon(const QMap<QString, int> &weapon)
     m_weapon = weapon;
 }
 
-int UAVStatus::index() const
-{
-    return m_index;
-}
-
-void UAVStatus::setIndex(int index)
-{
-    m_index = index;
-}
-
 QDataStream &operator<<(QDataStream &out, const UAVStatus &status)
 {
     out << status.roll()
@@ -146,7 +134,6 @@ QDataStream &operator<<(QDataStream &out, const UAVStatus &status)
         << status.altitude()
         << status.flyEnduranceHour()
         << status.flyEnduranceKM()
-        << status.index()
         << status.time()
         << status.weapon();
     return out;
@@ -162,7 +149,6 @@ QDataStream &operator>>(QDataStream &in, UAVStatus &status)
     float altitude;
     float feh;
     float fek;
-    int index;
     QTime time;
     QMap<QString, int> weapon;
 
@@ -174,19 +160,8 @@ QDataStream &operator>>(QDataStream &in, UAVStatus &status)
             >> altitude
             >> feh
             >> fek
-            >> index
             >> time
             >> weapon;
-    status = UAVStatus(roll,
-                       yaw,
-                       pinch,
-                       accelerator,
-                       airspeed,
-                       altitude,
-                       feh,
-                       fek,
-                       index,
-                       time,
-                       weapon);
+    status = UAVStatus(roll, yaw, pinch, accelerator, airspeed, altitude, feh, fek, time, weapon);
     return in;
 }

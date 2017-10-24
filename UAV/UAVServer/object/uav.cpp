@@ -1,6 +1,16 @@
 #include "uav.h"
 
-UAV::UAV(const QString &name, const QString &description, const QPixmap &pixmap, float acceleration, float flightHeight, float flyEndurance, float loadWeight, float maxSpeed, float voyage, float weight, const QMap<QString, int> weapon)
+UAV::UAV(const QString &name,
+         const QString &description,
+         const QPixmap &pixmap,
+         float acceleration,
+         float flightHeight,
+         float flyEndurance,
+         float loadWeight,
+         float maxSpeed,
+         float voyage,
+         float weight,
+         const QMap<QString, int> &weapon)
 {
     setName(name);
     setDescription(description);

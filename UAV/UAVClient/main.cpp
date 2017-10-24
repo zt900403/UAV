@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     w.setWeapons(d.weapons());
     w.setIp(d.ip());
     w.setPort(d.port());
+    w.setId(d.id());
     w.show();
     return a.exec();
 }

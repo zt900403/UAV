@@ -6,6 +6,8 @@
 #include <QVector>
 #include "object/uav.h"
 #include "object/weapon.h"
+#include "object/uavstatus.h"
+#include <QTcpSocket>
 
 namespace Ui {
 class MainDialog;
@@ -31,6 +33,9 @@ public:
     int port() const;
     void setPort(int port);
 
+    int id() const;
+    void setId(int id);
+
 private slots:
     void onRollAndPitch(float roll, float pitch);
     void on_fireButton_clicked();
@@ -43,7 +48,13 @@ private:
     void initPFD();
     void initWeaponGroup();
     void initUAVInfoGroup();
+    void closeConnection();
+    void sendUAVStatus(const UAVStatus &status);
 
+private slots:
+    void connectionClosedByServer();
+    void updateWidgets();
+    void error();
 private:
     Ui::MainDialog *ui;
     int m_timerId;
@@ -57,6 +68,10 @@ private:
     float m_altitude;// = 5000.0f;
     float m_Status_pitch;// = 0.0f;
     float m_Status_roll;// = 0.0f;
+    QTcpSocket m_tcpSocket;
+    qint64 m_nextBlockSize;
+    qint64 m_frameNum;
+    int m_id;
 };
 
 #endif // MAINDIALOG_H

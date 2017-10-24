@@ -3,14 +3,22 @@
 
 UAVTcpServer::UAVTcpServer(QObject *parent)
     : QTcpServer(parent)
+    , m_id(0)
+    , m_parent(parent)
 {
 
 }
 
 void UAVTcpServer::incomingConnection(int socketId)
 {
-    UAVTcpSocket *socket = new UAVTcpSocket(m_uavs, m_weapons, this);
+    UAVTcpSocket *socket = new UAVTcpSocket(m_uavs,
+                                            m_weapons,
+                                            m_id,
+                                            m_ipIdMap,
+                                            this);
     socket->setSocketDescriptor(socketId);
+    connect(socket, SIGNAL(createUAV(int,int,QString)), m_parent, SLOT(onCreateUAV(int, int, QString)));
+    connect(socket, SIGNAL(updateUAVStatus(int,qint64,UAVStatus)), m_parent, SLOT(onUpdateUAVStatus(int, qint64, UAVStatus)));
 }
 
 QVector<Weapon> UAVTcpServer::weapons() const

@@ -11,7 +11,10 @@ MainDialog::MainDialog(QWidget *parent) :
     m_airspeed(125.0f),
     m_altitude(5000.0f),
     m_Status_pitch(0.0f),
-    m_Status_roll(0.0f)
+    m_Status_roll(0.0f),
+    m_nextBlockSize(0),
+    m_frameNum(0),
+    m_id(-1)
 {
     ui->setupUi(this);
 
@@ -50,6 +53,11 @@ MainDialog::MainDialog(QWidget *parent) :
     QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(onRollAndPitch(float, float)));
 
     initPFD();
+
+//    connect(&m_tcpSocket, SIGNAL(connected()), this, SLOT(sendUAVStatus()));
+    connect(&m_tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
+    connect(&m_tcpSocket, SIGNAL(readyRead()), this, SLOT(updateWidgets()));
+    connect(&m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
 }
 
 MainDialog::~MainDialog()
@@ -74,6 +82,11 @@ void MainDialog::onRollAndPitch(float roll, float pitch)
 void MainDialog::timerEvent(QTimerEvent *event)
 {
     QDialog::timerEvent(event);
+
+    if (!m_tcpSocket.isOpen()) {
+        m_tcpSocket.connectToHost(m_ip, m_port);
+    }
+
     float timeStep = m_time.restart();
     m_realTime = m_realTime + timeStep / 1000.0f;
 
@@ -103,6 +116,20 @@ void MainDialog::timerEvent(QTimerEvent *event)
     ui->widgetPFD->setAltitude(altitude);
     ui->widgetPFD->setClimbRate(climbRate);
     ui->widgetPFD->update();
+
+    if (m_tcpSocket.isOpen()) {
+        UAVStatus status(m_Status_roll,
+                         ui->yawSlider->value(),
+                         m_Status_pitch,
+                         ui->acceleratorSlider->value(),
+                         m_airspeed,
+                         m_altitude,
+                         0.0f,
+                         0.0f,
+                         QTime(),
+                         m_uav.weapon());
+        sendUAVStatus(status);
+    }
 }
 
 void MainDialog::initPFD()
@@ -170,6 +197,54 @@ void MainDialog::initUAVInfoGroup()
     i7->setText(0, "载荷kg");
     i7->setText(1, QString::number(m_uav.loadWeight()));
     t->insertTopLevelItem(index++, i7);
+}
+
+void MainDialog::closeConnection()
+{
+    m_tcpSocket.close();
+}
+
+void MainDialog::sendUAVStatus(const UAVStatus &status)
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_8);
+    out << qint64(0)
+        << QString("P2")
+        << quint8(m_id)
+        << m_frameNum++
+        << status;
+    out.device()->seek(0);
+    out << qint64(block.size() - sizeof(qint64));
+    m_tcpSocket.write(block);
+}
+
+void MainDialog::connectionClosedByServer()
+{
+    if (m_nextBlockSize != 0xFFFFFFFF) {
+
+    }
+    closeConnection();
+}
+
+void MainDialog::updateWidgets()
+{
+
+}
+
+void MainDialog::error()
+{
+    closeConnection();
+}
+
+int MainDialog::id() const
+{
+    return m_id;
+}
+
+void MainDialog::setId(int id)
+{
+    m_id = id;
 }
 
 int MainDialog::port() const

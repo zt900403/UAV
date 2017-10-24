@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     components/aircraftcontroller.cpp \
     dialog/networkdialog.cpp \
     object/uav.cpp \
-    object/weapon.cpp
+    object/weapon.cpp \
+    object/uavstatus.cpp
 
 HEADERS  += maindialog.h \
     components/qfi_PFD.h \
@@ -31,7 +32,8 @@ HEADERS  += maindialog.h \
     components/aircraftcontroller.h \
     dialog/networkdialog.h \
     object/uav.h \
-    object/weapon.h
+    object/weapon.h \
+    object/uavstatus.h
 
 FORMS    += maindialog.ui \
     widgets/WidgetPFD.ui \

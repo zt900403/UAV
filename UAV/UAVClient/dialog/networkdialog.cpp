@@ -49,7 +49,7 @@ void NetworkDialog::sendRequest()
 
 void NetworkDialog::connectionClosedByServer()
 {
-    if (m_nextBlockSize != 0xFFFFFFFFFFFFFFFF) {
+    if (m_nextBlockSize != 0xFFFFFFFF) {
 
     }
     closeConnection();
@@ -72,7 +72,7 @@ void NetworkDialog::updateUAVWidgets()
             in >> m_nextBlockSize;
         }
 
-        if (m_nextBlockSize == 0xFFFFFFFFFFFFFFFF) {
+        if (m_nextBlockSize == 0xFFFFFFFF) {
             closeConnection();
             break;
         }
@@ -81,22 +81,32 @@ void NetworkDialog::updateUAVWidgets()
             break;
 
         QString responseType;
-        in >> responseType >> m_uavs >> m_weapons;
-        QVectorIterator<UAV> i(m_uavs);
-        while(i.hasNext()) {
-            UAV u = i.next();
-            QString name = u.name();
-            QPixmap pixmap = u.pixmap();
-            QString desc = u.description();
+        in >> responseType;
+        if (responseType == "R0") {
+            in >> m_uavs >> m_weapons;
+            QVectorIterator<UAV> i(m_uavs);
+            while(i.hasNext()) {
+                UAV u = i.next();
+                QString name = u.name();
+                QPixmap pixmap = u.pixmap();
+                QString desc = u.description();
 
-            QListWidgetItem *item= new QListWidgetItem(name);
-            QVariant i;
-            QVariant d;
-            i.setValue(pixmap);
-            d.setValue(desc);
-            item->setData(MyImgRole, i);
-            item->setData(MyDescRole, d);
-            ui->uavslistWidget->addItem(item);
+                QListWidgetItem *item= new QListWidgetItem(name);
+                QVariant i;
+                QVariant d;
+                i.setValue(pixmap);
+                d.setValue(desc);
+                item->setData(MyImgRole, i);
+                item->setData(MyDescRole, d);
+                ui->uavslistWidget->addItem(item);
+            }
+        }
+        if (responseType == "R1") {
+            quint8 id;
+            in >> id;
+            setId(id);
+            closeConnection();
+            accept();
         }
 
         m_nextBlockSize = 0;
@@ -119,6 +129,16 @@ void NetworkDialog::closeConnection()
     ui->ipLineEdit->setEnabled(true);
     ui->portLineEdit->setEnabled(true);
     ui->connectToServerBtn->setEnabled(true);
+}
+
+int NetworkDialog::id() const
+{
+    return m_id;
+}
+
+void NetworkDialog::setId(int id)
+{
+    m_id = id;
 }
 
 QPair<int, QString> NetworkDialog::selected() const
@@ -194,8 +214,20 @@ void NetworkDialog::on_okBtn_clicked()
 {
     int row = ui->uavslistWidget->currentRow();
     if (row != -1) {
-        QPair<int, QString> pair(row, ui->uavslistWidget->currentItem()->data(Qt::DisplayRole).toString());
+        QString name = ui->uavslistWidget->currentItem()->data(Qt::DisplayRole).toString();
+        QPair<int, QString> pair(row, name);
         setSelected(pair);
         accept();
+
+        QByteArray block;
+        QDataStream out(&block, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_4_8);
+        out << qint64(0)
+            << QString("P1")
+            << quint8(row)
+            << name;
+        out.device()->seek(0);
+        out << qint64(block.size() - sizeof(qint64));
+        m_tcpSocket.write(block);
     }
 }

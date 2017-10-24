@@ -166,3 +166,26 @@ void MainWindow::on_changeUAVTypeBtn_clicked()
         updateUavMetaDataGroup();
     }
 }
+
+void MainWindow::onCreateUAV(int id, int index, QString name)
+{
+    UAVStatus u;
+    u.setIndex(index);
+    m_idUAVStatusMap[id] = u;
+}
+
+void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status)
+{
+    m_idUAVStatusMap[id] = status;
+    qDebug() << "id = " + id
+             << "roll:"
+             << status.roll()
+             << "pinch:"
+             << status.pinch()
+             << "yaw:"
+             << status.yaw()
+             << "空速:"
+             << status.airSpeed()
+             << "高度:"
+             << status.altitude();
+}

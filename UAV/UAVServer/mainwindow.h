@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include <object/uav.h>
 #include <object/weapon.h>
+#include <object/uavstatus.h>
 
 #include "utils/json.h"
 #include <QVector>
+
 class QDir;
 class QListWidgetItem;
 class QLabel;
@@ -35,7 +37,8 @@ private slots:
     void on_uavslistWidget_itemClicked(QListWidgetItem *item);
 
     void on_changeUAVTypeBtn_clicked();
-
+    void onCreateUAV(int id, int index, QString name);
+    void onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status);
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
@@ -48,6 +51,7 @@ private:
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
     UAVTcpServer *m_tcpserver;
+    QMap<int, UAVStatus> m_idUAVStatusMap;
 };
 
 #endif // MAINWINDOW_H
