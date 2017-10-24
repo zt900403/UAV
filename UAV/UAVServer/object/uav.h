@@ -16,7 +16,7 @@ public:
         float maxSpeed = 0.0f,
         float voyage = 0.0f,
         float weight = 0.0f,
-        const QMap<QString, int> weapon = QMap<QString, int>());
+        const QMap<QString, int> &weapon = QMap<QString, int>());
 
     float acceleration() const;
     void setAcceleration(float acceleration);

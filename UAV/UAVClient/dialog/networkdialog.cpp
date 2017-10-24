@@ -34,6 +34,10 @@ NetworkDialog::~NetworkDialog()
 
 void NetworkDialog::sendRequest()
 {
+    ui->okBtn->setEnabled(true);
+    setIp(ui->ipLineEdit->text());
+    setPort(ui->portLineEdit->text().toInt());
+
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_8);
@@ -45,7 +49,7 @@ void NetworkDialog::sendRequest()
 
 void NetworkDialog::connectionClosedByServer()
 {
-    if (m_nextBlockSize != 0xFFFF) {
+    if (m_nextBlockSize != 0xFFFFFFFFFFFFFFFF) {
 
     }
     closeConnection();
@@ -68,7 +72,7 @@ void NetworkDialog::updateUAVWidgets()
             in >> m_nextBlockSize;
         }
 
-        if (m_nextBlockSize == 0xFFFF) {
+        if (m_nextBlockSize == 0xFFFFFFFFFFFFFFFF) {
             closeConnection();
             break;
         }
@@ -94,6 +98,7 @@ void NetworkDialog::updateUAVWidgets()
             item->setData(MyDescRole, d);
             ui->uavslistWidget->addItem(item);
         }
+
         m_nextBlockSize = 0;
     }
 }
@@ -113,6 +118,57 @@ void NetworkDialog::closeConnection()
     m_tcpSocket.close();
     ui->ipLineEdit->setEnabled(true);
     ui->portLineEdit->setEnabled(true);
+    ui->connectToServerBtn->setEnabled(true);
+}
+
+QPair<int, QString> NetworkDialog::selected() const
+{
+    return m_selected;
+}
+
+void NetworkDialog::setSelected(const QPair<int, QString> &selected)
+{
+    m_selected = selected;
+}
+
+int NetworkDialog::port() const
+{
+    return m_port;
+}
+
+void NetworkDialog::setPort(int port)
+{
+    m_port = port;
+}
+
+QString NetworkDialog::ip() const
+{
+    return m_ip;
+}
+
+void NetworkDialog::setIp(const QString &ip)
+{
+    m_ip = ip;
+}
+
+QVector<Weapon> NetworkDialog::weapons() const
+{
+    return m_weapons;
+}
+
+void NetworkDialog::setWeapons(const QVector<Weapon> &weapons)
+{
+    m_weapons = weapons;
+}
+
+QVector<UAV> NetworkDialog::uavs() const
+{
+    return m_uavs;
+}
+
+void NetworkDialog::setUavs(const QVector<UAV> &uavs)
+{
+    m_uavs = uavs;
 }
 
 void NetworkDialog::on_connectToServerBtn_clicked()
@@ -120,6 +176,8 @@ void NetworkDialog::on_connectToServerBtn_clicked()
     m_tcpSocket.connectToHost(ui->ipLineEdit->text(), ui->portLineEdit->text().toInt());
     ui->ipLineEdit->setDisabled(true);
     ui->portLineEdit->setDisabled(true);
+    ui->connectToServerBtn->setDisabled(true);
+    ui->uavslistWidget->clear();
     m_nextBlockSize = 0;
 }
 
@@ -130,4 +188,14 @@ void NetworkDialog::on_uavslistWidget_itemClicked(QListWidgetItem *item)
     QVariant d = item->data(MyDescRole);
     QPixmap p = i.value<QPixmap>().scaled(150, 150);
     ui->uavImageTextLabel->setPixmap(p);
+}
+
+void NetworkDialog::on_okBtn_clicked()
+{
+    int row = ui->uavslistWidget->currentRow();
+    if (row != -1) {
+        QPair<int, QString> pair(row, ui->uavslistWidget->currentItem()->data(Qt::DisplayRole).toString());
+        setSelected(pair);
+        accept();
+    }
 }

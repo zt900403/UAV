@@ -2,20 +2,19 @@
 #include "ui_maindialog.h"
 #include <math.h>
 #include <QtGui>
-float airspeed = 125.0f;
-float altitude = 5000.0f;
-float Status_pitch = 0.0f;
-float Status_roll = 0.0f;
 
 MainDialog::MainDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog),
     m_timerId(0),
-    m_realTime(0.0f)
+    m_realTime(0.0f),
+    m_airspeed(125.0f),
+    m_altitude(5000.0f),
+    m_Status_pitch(0.0f),
+    m_Status_roll(0.0f)
 {
     ui->setupUi(this);
 
-    initPFD();
 
     QTimer *timer = new QTimer(this);
 
@@ -50,6 +49,7 @@ MainDialog::MainDialog(QWidget *parent) :
 
     QObject::connect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(onRollAndPitch(float, float)));
 
+    initPFD();
 }
 
 MainDialog::~MainDialog()
@@ -66,8 +66,8 @@ void MainDialog::onRollAndPitch(float roll, float pitch)
     ui->widgetPFD->update();
     ui->rollEdit->setText( QString::number(roll));
     ui->pitchEdit->setText(QString::number(pitch));
-    Status_pitch = pitch;
-    Status_roll = roll;
+    m_Status_pitch = pitch;
+    m_Status_roll = roll;
 }
 
 
@@ -84,20 +84,20 @@ void MainDialog::timerEvent(QTimerEvent *event)
     float climbRate = 0.0f;
 //    pressure = 2.0f * sin(m_realTime / 20.0f);
 
-    Status_roll = 180.0f * sin(m_realTime / 10.0f);
+    m_Status_roll = 180.0f * sin(m_realTime / 10.0f);
 //    heading = 360.0f * sin(m_realTime / 40.0f);
     float horizontalSpeed;
     float seedtmp = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
-    airspeed = (airspeed + seedtmp) > 125.0f ? (airspeed +seedtmp) : 125.0f;
-    altitude = altitude + airspeed * sin(Status_pitch/360*2*3.1415926);
-    horizontalSpeed = airspeed * cos(Status_pitch/360*2*3.1415926);
+    m_airspeed = (m_airspeed + seedtmp) > 125.0f ? (m_airspeed +seedtmp) : 125.0f;
+    m_altitude = m_altitude + m_airspeed * sin(m_Status_pitch/360*2*3.1415926);
+    horizontalSpeed = m_airspeed * cos(m_Status_pitch/360*2*3.1415926);
 
-    machNo = airspeed / 650.0f;
+    machNo = m_airspeed / 650.0f;
 
     climbRate = 650.0f * sin(m_realTime / 20.0f);
 
-    ui->speedEdit->setText(QString::number(airspeed));
-    ui->widgetPFD->setAirspeed(airspeed);
+    ui->speedEdit->setText(QString::number(m_airspeed));
+    ui->widgetPFD->setAirspeed(m_airspeed);
 //    ui->widgetPFD->setPressure(pressure);
     ui->widgetPFD->setMachNo(machNo);
     ui->widgetPFD->setAltitude(altitude);
@@ -117,6 +117,101 @@ void MainDialog::initPFD()
     pfd->setAltitude(0.0f);
     pfd->setPressure(0.0f);
     pfd->update();
+}
+
+void MainDialog::initWeaponGroup()
+{
+    QTreeWidget *t = ui->weapenTreeWidget;
+    t->clear();
+    int index = 0;
+    QMapIterator<QString, int> i(m_uav.weapon());
+    while(i.hasNext()) {
+        i.next();
+        QTreeWidgetItem *item= new QTreeWidgetItem();
+        item->setText(0, i.key());
+        item->setText(1, QString::number(i.value()));
+        t->insertTopLevelItem(index++, item);
+    }
+}
+
+void MainDialog::initUAVInfoGroup()
+{
+    QPixmap p = m_uav.pixmap().scaled(50,50);
+    ui->uavImageLabel->setPixmap(p);
+
+    QTreeWidget *t = ui->uavTreeWidget;
+    t->clear();
+    int index = 0;
+    QTreeWidgetItem *i1= new QTreeWidgetItem();
+    i1->setText(0, "自重kg");
+    i1->setText(1, QString::number(m_uav.weight()));
+    t->insertTopLevelItem(index++, i1);
+    QTreeWidgetItem *i2= new QTreeWidgetItem();
+    i2->setText(0, "航程km");
+    i2->setText(1, QString::number(m_uav.voyage()));
+    t->insertTopLevelItem(index++, i2);
+    QTreeWidgetItem *i3= new QTreeWidgetItem();
+    i3->setText(0, "航高m");
+    i3->setText(1, QString::number(m_uav.flightHeight()));
+    t->insertTopLevelItem(index++, i3);
+    QTreeWidgetItem *i4= new QTreeWidgetItem();
+    i4->setText(0, "续航h");
+    i4->setText(1, QString::number(m_uav.flyEndurance()));
+    t->insertTopLevelItem(index++, i4);
+    QTreeWidgetItem *i5= new QTreeWidgetItem();
+    i5->setText(0, "最高时速km/h");
+    i5->setText(1, QString::number(m_uav.maxSpeed()));
+    t->insertTopLevelItem(index++, i5);
+    QTreeWidgetItem *i6= new QTreeWidgetItem();
+    i6->setText(0, "提速加速度km/s^2");
+    i6->setText(1, QString::number(m_uav.acceleration()));
+    t->insertTopLevelItem(index++, i6);
+    QTreeWidgetItem *i7= new QTreeWidgetItem();
+    i7->setText(0, "载荷kg");
+    i7->setText(1, QString::number(m_uav.loadWeight()));
+    t->insertTopLevelItem(index++, i7);
+}
+
+int MainDialog::port() const
+{
+    return m_port;
+}
+
+void MainDialog::setPort(int port)
+{
+    m_port = port;
+}
+
+QString MainDialog::ip() const
+{
+    return m_ip;
+}
+
+void MainDialog::setIp(const QString &ip)
+{
+    m_ip = ip;
+}
+
+QVector<Weapon> MainDialog::weapons() const
+{
+    return m_weapons;
+}
+
+void MainDialog::setWeapons(const QVector<Weapon> &weapons)
+{
+    m_weapons = weapons;
+    initWeaponGroup();
+}
+
+UAV MainDialog::uav() const
+{
+    return m_uav;
+}
+
+void MainDialog::setUav(const UAV &uav)
+{
+    m_uav = uav;
+    initUAVInfoGroup();
 }
 
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>282</width>
+    <height>262</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,7 +103,14 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QListWidget" name="uavslistWidget"/>
+        <widget class="QListWidget" name="uavslistWidget">
+         <property name="styleSheet">
+          <string notr="true">#uavslistWidget {
+	border: none;
+	background-color: transparent;
+}</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="okBtn">

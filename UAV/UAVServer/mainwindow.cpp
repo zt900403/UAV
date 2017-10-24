@@ -12,7 +12,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_tcpserver(NULL)
 {
     ui->setupUi(this);
 
@@ -22,11 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
 
     updateUavMetaDataGroup();
-    m_tcpserver = new UAVTcpServer(m_uavs, m_weapons, this);
-    if (!m_tcpserver->listen(QHostAddress::Any, 10666)) {
-        QMessageBox::critical(this, tr("错误"), tr("端口监听失败, 请确定其他程序没有使用10666端口!"),
-                              QMessageBox::Ok);
-    }
+
 }
 
 MainWindow::~MainWindow()
@@ -73,6 +70,8 @@ bool MainWindow::updateUavMetaDataGroup()
 
     QtJson::JsonArray weapons = result["weapons"].toList();
     instantiateWeapons(weapons);
+
+    listenServer();
     return true;
 }
 
@@ -130,6 +129,23 @@ void MainWindow::instantiateWeapons(const QtJson::JsonArray &weapons)
 
         Weapon w(name, desc, R_L, g, f, k, weight);
         m_weapons.append(w);
+    }
+}
+
+void MainWindow::listenServer()
+{
+    if (!m_tcpserver) {
+        m_tcpserver = new UAVTcpServer(this);
+    }
+    if (m_tcpserver->isListening())
+        m_tcpserver->close();
+
+    m_tcpserver->setUavs(m_uavs);
+    m_tcpserver->setWeapons(m_weapons);
+
+    if (!m_tcpserver->listen(QHostAddress::Any, 10666)) {
+        QMessageBox::critical(this, tr("错误"), tr("端口监听失败, 请确定其他程序没有使用10666端口!"),
+                              QMessageBox::Ok);
     }
 }
 

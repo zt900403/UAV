@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     object/uav.cpp \
     object/weapon.cpp \
     net/uavtcpserver.cpp \
-    net/uavtcpsocket.cpp
+    net/uavtcpsocket.cpp \
+    object/uavstatus.cpp
 
 HEADERS  += \
     components/rOg_image.h \
@@ -32,7 +33,8 @@ HEADERS  += \
     object/uav.h \
     object/weapon.h \
     net/uavtcpserver.h \
-    net/uavtcpsocket.h
+    net/uavtcpsocket.h \
+    object/uavstatus.h
 
 FORMS    += \
     mainwindow.ui \

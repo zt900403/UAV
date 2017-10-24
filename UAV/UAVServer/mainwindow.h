@@ -41,6 +41,7 @@ private:
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
     void instantiateUAVs(const QtJson::JsonArray &uavs);
     void instantiateWeapons(const QtJson::JsonArray &weapons);
+    void listenServer();
 
 private:
     Ui::MainWindow *ui;

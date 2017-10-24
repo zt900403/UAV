@@ -19,6 +19,21 @@ public:
     explicit NetworkDialog(QWidget *parent = 0);
     ~NetworkDialog();
 
+    QVector<UAV> uavs() const;
+    void setUavs(const QVector<UAV> &uavs);
+
+    QVector<Weapon> weapons() const;
+    void setWeapons(const QVector<Weapon> &weapons);
+
+    QString ip() const;
+    void setIp(const QString &ip);
+
+    int port() const;
+    void setPort(int port);
+
+    QPair<int, QString> selected() const;
+    void setSelected(const QPair<int, QString> &selected);
+
 private slots:
     void sendRequest();
     void connectionClosedByServer();
@@ -27,6 +42,8 @@ private slots:
     void on_connectToServerBtn_clicked();
 
     void on_uavslistWidget_itemClicked(QListWidgetItem *item);
+
+    void on_okBtn_clicked();
 
 private:
     void initWidgets();
@@ -41,6 +58,9 @@ private:
     qint64 m_nextBlockSize;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    QString m_ip;
+    int m_port;
+    QPair<int, QString> m_selected;
 };
 
 #endif // NETWORKDIALOG_H

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
-    <height>605</height>
+    <width>614</width>
+    <height>682</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,88 +41,10 @@
                 <string>数量</string>
                </property>
               </column>
-              <item>
-               <property name="text">
-                <string>机炮</string>
-               </property>
-               <property name="text">
-                <string>123</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>新建项目</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="6,1">
               <item>
                <spacer name="horizontalSpacer">
                 <property name="orientation">
@@ -183,7 +105,7 @@
          <property name="title">
           <string>侦察系统</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout" stretch="3,0,1">
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="3,1,1">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
@@ -236,7 +158,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_8" stretch="2,2,1">
+    <layout class="QVBoxLayout" name="verticalLayout_8" stretch="3,2,3">
      <item>
       <widget class="QGroupBox" name="groupBox_5">
        <property name="title">
@@ -251,13 +173,6 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="QLabel" name="label_12">
-              <property name="text">
-               <string>油门</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QSlider" name="acceleratorSlider">
               <property name="maximum">
                <number>100</number>
@@ -270,6 +185,13 @@
               </property>
               <property name="tickInterval">
                <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>油门</string>
               </property>
              </widget>
             </item>
@@ -555,11 +477,11 @@
        <property name="title">
         <string>无人机信息</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,1">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,0">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <widget class="QLabel" name="label_10">
+           <widget class="QLabel" name="uavImageLabel">
             <property name="text">
              <string>无人机图片</string>
             </property>
@@ -575,13 +497,20 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>飞机固有参数</string>
+         <widget class="QTreeWidget" name="uavTreeWidget">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
+          <column>
+           <property name="text">
+            <string>属性</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>值</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>

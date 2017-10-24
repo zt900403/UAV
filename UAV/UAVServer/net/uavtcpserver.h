@@ -9,7 +9,13 @@ class UAVTcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    UAVTcpServer(QVector<UAV> uavs = QVector<UAV>(), QVector<Weapon> weapons = QVector<Weapon>(), QObject *parent = 0);
+    UAVTcpServer(QObject *parent = 0);
+
+    QVector<UAV> uavs() const;
+    void setUavs(const QVector<UAV> &uavs);
+
+    QVector<Weapon> weapons() const;
+    void setWeapons(const QVector<Weapon> &weapons);
 
 private:
     void incomingConnection(int socketId);
