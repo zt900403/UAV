@@ -19,6 +19,7 @@ void UAVTcpServer::incomingConnection(int socketId)
     socket->setSocketDescriptor(socketId);
     connect(socket, SIGNAL(createUAV(int,int,QString)), m_parent, SLOT(onCreateUAV(int, int, QString)));
     connect(socket, SIGNAL(updateUAVStatus(int,qint64,UAVStatus)), m_parent, SLOT(onUpdateUAVStatus(int, qint64, UAVStatus)));
+    connect(socket, SIGNAL(closeByClient(int)), m_parent, SLOT(onCloseByClient(int)));
 }
 
 QVector<Weapon> UAVTcpServer::weapons() const

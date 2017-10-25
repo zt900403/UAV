@@ -71,7 +71,6 @@ void NetworkDialog::updateUAVWidgets()
                 break;
             in >> m_nextBlockSize;
         }
-
         if (m_nextBlockSize == 0xFFFFFFFF) {
             closeConnection();
             break;
@@ -105,7 +104,6 @@ void NetworkDialog::updateUAVWidgets()
             quint8 id;
             in >> id;
             setId(id);
-            closeConnection();
             accept();
         }
 
@@ -129,6 +127,22 @@ void NetworkDialog::closeConnection()
     ui->ipLineEdit->setEnabled(true);
     ui->portLineEdit->setEnabled(true);
     ui->connectToServerBtn->setEnabled(true);
+}
+
+void NetworkDialog::sendCloseSign()
+{
+    QDataStream out(&m_tcpSocket);
+    out << qint64(0xFFFFFFFF);
+}
+
+int NetworkDialog::index() const
+{
+    return m_index;
+}
+
+void NetworkDialog::setIndex(int index)
+{
+    m_index = index;
 }
 
 int NetworkDialog::id() const
@@ -217,7 +231,7 @@ void NetworkDialog::on_okBtn_clicked()
         QString name = ui->uavslistWidget->currentItem()->data(Qt::DisplayRole).toString();
         QPair<int, QString> pair(row, name);
         setSelected(pair);
-        accept();
+        setIndex(row);
 
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);

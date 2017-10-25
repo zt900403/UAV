@@ -27,8 +27,11 @@ void UAVTcpSocket::readClient()
             return ;
         in >> m_nextBlockSize;
     }
-
     if (m_nextBlockSize == 0xFFFFFFFF) {
+        QString ip = getClientIp();
+        int id = m_ipIdMap[ip];
+        m_ipIdMap.remove(ip);
+        emit closeByClient(id);
         close();
         return ;
     }
@@ -67,6 +70,7 @@ void UAVTcpSocket::sendCloseSign()
 {
     QDataStream out(this);
     out << qint64(0xFFFFFFFF);
+    flush();
     close();
 }
 
@@ -92,7 +96,7 @@ int UAVTcpSocket::sendId()
     out << qint64(0)
         << QString("R1");
 
-    QString ip = peerAddress().toString();
+    QString ip = getClientIp();
     int id ;
     if (m_ipIdMap.contains(ip)) {
         id = m_ipIdMap[ip];
@@ -105,4 +109,9 @@ int UAVTcpSocket::sendId()
     out << qint64(block.size() - sizeof(qint64));
     write(block);
     return id;
+}
+
+QString UAVTcpSocket::getClientIp()
+{
+    return peerAddress().toString();
 }

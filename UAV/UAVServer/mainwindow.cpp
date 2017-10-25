@@ -9,6 +9,7 @@
 #include "object/weapon.h"
 #include "net/uavtcpserver.h"
 #include <QMessageBox>
+#include <QLineEdit>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -149,6 +150,76 @@ void MainWindow::listenServer()
     }
 }
 
+void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
+{
+    QWidget *widget = new QWidget();
+    QLabel *l1 = new QLabel(tr("俯仰:"));
+    QLabel *l2 = new QLabel(tr("横滚:"));
+    QLabel *l3 = new QLabel(tr("偏航:"));
+    QLabel *l4 = new QLabel(tr("油门:"));
+    QLabel *l5 = new QLabel(tr("空速:"));
+    QLabel *l6 = new QLabel(tr("高度:"));
+    QLineEdit *pinch = new QLineEdit(QString::number(status.pinch()));
+    QLineEdit *roll = new QLineEdit(QString::number(status.roll()));
+    QLineEdit *yaw = new QLineEdit(QString::number(status.yaw()));
+    QLineEdit *acc = new QLineEdit(QString::number(status.accelerator()));
+    QLineEdit *airSpeed = new QLineEdit(QString::number(status.airSpeed()));
+    QLineEdit *altitude = new QLineEdit(QString::number(status.altitude()));
+
+    pinch->setObjectName("pinch");
+    roll->setObjectName("roll");
+    yaw->setObjectName("yaw");
+    acc->setObjectName("acc");
+    airSpeed->setObjectName("airSpeed");
+    altitude->setObjectName("altitude");
+    pinch->setDisabled(true);
+    roll->setDisabled(true);
+    yaw->setDisabled(true);
+    acc->setDisabled(true);
+    airSpeed->setDisabled(true);
+    altitude->setDisabled(true);
+
+    QHBoxLayout *hl1 = new QHBoxLayout();
+    hl1->addWidget(l1);
+    hl1->addWidget(pinch);
+
+    QHBoxLayout *hl2 = new QHBoxLayout();
+    hl2->addWidget(l2);
+    hl2->addWidget(roll);
+
+    QHBoxLayout *hl3 = new QHBoxLayout();
+    hl3->addWidget(l3);
+    hl3->addWidget(yaw);
+
+    QHBoxLayout *hl4 = new QHBoxLayout();
+    hl4->addWidget(l4);
+    hl4->addWidget(acc);
+
+    QHBoxLayout *hl5 = new QHBoxLayout();
+    hl5->addWidget(l5);
+    hl5->addWidget(airSpeed);
+
+    QHBoxLayout *hl6 = new QHBoxLayout();
+    hl6->addWidget(l6);
+    hl6->addWidget(altitude);
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    vLayout->addLayout(hl1);
+    vLayout->addLayout(hl2);
+    vLayout->addLayout(hl3);
+    vLayout->addLayout(hl4);
+    vLayout->addLayout(hl5);
+    vLayout->addLayout(hl6);
+
+    widget->setLayout(vLayout);
+
+    QString title = m_uavs[status.index()].name();
+    title += "#";
+    title += QString::number(id);
+    m_idTabMap[id] = widget;
+    ui->uavStatusTabWidget->addTab(widget, title);
+}
+
 void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
 {
     QVariant i = item->data(MyImgRole);
@@ -172,20 +243,60 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     UAVStatus u;
     u.setIndex(index);
     m_idUAVStatusMap[id] = u;
+    if (!m_idTabMap.contains(id))
+        addUAVStatusTab(id, u);
 }
 
 void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status)
 {
     m_idUAVStatusMap[id] = status;
-    qDebug() << "id = " + id
-             << "roll:"
-             << status.roll()
-             << "pinch:"
-             << status.pinch()
-             << "yaw:"
-             << status.yaw()
-             << "空速:"
-             << status.airSpeed()
-             << "高度:"
-             << status.altitude();
+    if (m_idTabMap.contains(id)) {
+        QWidget *w = m_idTabMap[id];
+
+        w->findChild<QLineEdit*>("pinch")->setText(QString::number(status.pinch()));
+        w->findChild<QLineEdit*>("roll")->setText(QString::number(status.roll()));
+        w->findChild<QLineEdit*>("yaw")->setText(QString::number(status.yaw()));
+        w->findChild<QLineEdit*>("acc")->setText(QString::number(status.accelerator()));
+        w->findChild<QLineEdit*>("airSpeed")->setText(QString::number(status.airSpeed()));
+        w->findChild<QLineEdit*>("altitude")->setText(QString::number(status.altitude()));
+
+    }
+//    QTabWidget *t = ui->uavStatusTabWidget;
+//    int len = t->count();
+//    int index = -1;
+//    QString tabTitle = m_uavs[status.index()].name();
+//    tabTitle += "#";
+//    tabTitle += QString::number(id);
+//    for (int i = 0; i < len; ++i) {
+//        if (t->tabText(i) == tabTitle) {
+//            index = i;
+//            break;
+//        }
+//    }
+
+//    qDebug() << id
+//             << "roll:"
+//             << status.roll()
+//             << "pinch:"
+//             << status.pinch()
+//             << "yaw:"
+//             << status.yaw()
+//             << "空速:"
+//             << status.airSpeed()
+//             << "高度:"
+    //             << status.altitude();
+}
+
+void MainWindow::onCloseByClient(int id)
+{
+    int len = ui->uavStatusTabWidget->count();
+    for (int i = 0; i < len; ++i) {
+        QString title = ui->uavStatusTabWidget->tabText(i);
+        if (title.endsWith(QString::number(id))) {
+            m_idTabMap.remove(id);
+            m_idUAVStatusMap.remove(id);
+            ui->uavStatusTabWidget->removeTab(i);
+            break;
+        }
+    }
 }

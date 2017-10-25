@@ -39,12 +39,14 @@ private slots:
     void on_changeUAVTypeBtn_clicked();
     void onCreateUAV(int id, int index, QString name);
     void onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status);
+    void onCloseByClient(int id);
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
     void instantiateUAVs(const QtJson::JsonArray &uavs);
     void instantiateWeapons(const QtJson::JsonArray &weapons);
     void listenServer();
+    void addUAVStatusTab(int id, const UAVStatus &status);
 
 private:
     Ui::MainWindow *ui;
@@ -52,6 +54,7 @@ private:
     QVector<Weapon> m_weapons;
     UAVTcpServer *m_tcpserver;
     QMap<int, UAVStatus> m_idUAVStatusMap;
+    QMap<int, QWidget*> m_idTabMap;
 };
 
 #endif // MAINWINDOW_H

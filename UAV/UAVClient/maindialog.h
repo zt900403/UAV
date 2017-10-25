@@ -36,6 +36,9 @@ public:
     int id() const;
     void setId(int id);
 
+    int index() const;
+    void setIndex(int index);
+
 private slots:
     void onRollAndPitch(float roll, float pitch);
     void on_fireButton_clicked();
@@ -50,6 +53,8 @@ private:
     void initUAVInfoGroup();
     void closeConnection();
     void sendUAVStatus(const UAVStatus &status);
+    void sendCloseSign();
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void connectionClosedByServer();
@@ -72,6 +77,7 @@ private:
     qint64 m_nextBlockSize;
     qint64 m_frameNum;
     int m_id;
+    int m_index;
 };
 
 #endif // MAINDIALOG_H

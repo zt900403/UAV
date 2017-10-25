@@ -14,7 +14,8 @@ MainDialog::MainDialog(QWidget *parent) :
     m_Status_roll(0.0f),
     m_nextBlockSize(0),
     m_frameNum(0),
-    m_id(-1)
+    m_id(-1),
+    m_index(-1)
 {
     ui->setupUi(this);
 
@@ -58,6 +59,7 @@ MainDialog::MainDialog(QWidget *parent) :
     connect(&m_tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
     connect(&m_tcpSocket, SIGNAL(readyRead()), this, SLOT(updateWidgets()));
     connect(&m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+
 }
 
 MainDialog::~MainDialog()
@@ -126,6 +128,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
                          m_altitude,
                          0.0f,
                          0.0f,
+                         index(),
                          QTime(),
                          m_uav.weapon());
         sendUAVStatus(status);
@@ -219,6 +222,32 @@ void MainDialog::sendUAVStatus(const UAVStatus &status)
     m_tcpSocket.write(block);
 }
 
+void MainDialog::sendCloseSign()
+{
+    QDataStream out(&m_tcpSocket);
+    out << qint64(0xFFFFFFFF);
+    m_tcpSocket.flush();
+    m_tcpSocket.close();
+}
+
+void MainDialog::closeEvent(QCloseEvent *event)
+{
+    switch( QMessageBox::information( this, tr("退出"),
+                                      tr("确定要退出吗?"),
+                                      tr("是"), tr("否"),
+                                      0, 1 ) )
+    {
+    case 0:
+        sendCloseSign();
+        event->accept();
+        break;
+    case 1:
+    default:
+        event->ignore();
+        break;
+    }
+}
+
 void MainDialog::connectionClosedByServer()
 {
     if (m_nextBlockSize != 0xFFFFFFFF) {
@@ -235,6 +264,16 @@ void MainDialog::updateWidgets()
 void MainDialog::error()
 {
     closeConnection();
+}
+
+int MainDialog::index() const
+{
+    return m_index;
+}
+
+void MainDialog::setIndex(int index)
+{
+    m_index = index;
 }
 
 int MainDialog::id() const

@@ -19,6 +19,7 @@ public:
 signals:
     void createUAV(int id, int index, QString name);
     void updateUAVStatus(int id, qint64 frameNum, UAVStatus status);
+    void closeByClient(int id);
 private slots:
     void readClient();
 
@@ -27,6 +28,7 @@ private:
     void sendCloseSign();
     void sendUAVsAndWeapons();
     int sendId();
+    QString getClientIp();
 private:
     qint64 m_nextBlockSize;
     QVector<UAV> m_uavs;

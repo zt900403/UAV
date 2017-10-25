@@ -37,6 +37,9 @@ public:
     int id() const;
     void setId(int id);
 
+    int index() const;
+    void setIndex(int index);
+
 private slots:
     void sendRequest();
     void connectionClosedByServer();
@@ -51,6 +54,7 @@ private slots:
 private:
     void initWidgets();
     void closeConnection();
+    void sendCloseSign();
 private:
     enum MyDataRoles {
        MyImgRole = Qt:: UserRole + 10,
@@ -65,6 +69,7 @@ private:
     int m_port;
     QPair<int, QString> m_selected;
     int m_id;
+    int m_index;
 };
 
 #endif // NETWORKDIALOG_H
