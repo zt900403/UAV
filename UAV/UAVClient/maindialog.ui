@@ -214,10 +214,10 @@
           <item>
            <widget class="QSlider" name="yawSlider">
             <property name="minimum">
-             <number>-360</number>
+             <number>-180</number>
             </property>
             <property name="maximum">
-             <number>360</number>
+             <number>180</number>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
