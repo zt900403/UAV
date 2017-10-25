@@ -17,15 +17,21 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tcpserver(NULL)
 {
     ui->setupUi(this);
-
     QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
     QImage image(imageDir);
+    ui->gisView->setGisPosition(QPoint(500,500));
+    ui->gisView->setYaw(46);
+
+
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
+    ui->gisView->update();
+
 
     updateUavMetaDataGroup();
 
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -220,6 +226,7 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     ui->uavStatusTabWidget->addTab(widget, title);
 }
 
+
 void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
 {
     QVariant i = item->data(MyImgRole);
@@ -247,7 +254,7 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
         addUAVStatusTab(id, u);
 }
 
-void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status)
+void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 {
     m_idUAVStatusMap[id] = status;
     if (m_idTabMap.contains(id)) {
@@ -259,7 +266,17 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status)
         w->findChild<QLineEdit*>("acc")->setText(QString::number(status.accelerator()));
         w->findChild<QLineEdit*>("airSpeed")->setText(QString::number(status.airSpeed()));
         w->findChild<QLineEdit*>("altitude")->setText(QString::number(status.altitude()));
+        m_currentStatus = status;
 
+
+        // 更新位置
+        QPoint velocity(m_currentStatus.airSpeed()*sin(m_currentStatus.yaw()),-m_currentStatus.airSpeed()*cos(m_currentStatus.yaw()));
+        m_UAVGisPostion += velocity/5000;
+
+        qDebug()<< m_UAVGisPostion.x()<< " , " << m_UAVGisPostion.y() << " , speed: " <<  m_currentStatus.airSpeed() ;
+        ui->gisView->setGisPosition(m_UAVGisPostion);
+        ui->gisView->setYaw(m_currentStatus.yaw());
+        ui->gisView->update();
     }
 //    QTabWidget *t = ui->uavStatusTabWidget;
 //    int len = t->count();
@@ -300,3 +317,5 @@ void MainWindow::onCloseByClient(int id)
         }
     }
 }
+
+

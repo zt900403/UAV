@@ -5,9 +5,10 @@
 #include <object/uav.h>
 #include <object/weapon.h>
 #include <object/uavstatus.h>
-
+#include <QPicture.h>
 #include "utils/json.h"
 #include <QVector>
+
 
 class QDir;
 class QListWidgetItem;
@@ -55,6 +56,8 @@ private:
     UAVTcpServer *m_tcpserver;
     QMap<int, UAVStatus> m_idUAVStatusMap;
     QMap<int, QWidget*> m_idTabMap;
+    QPoint m_UAVGisPostion;
+    UAVStatus m_currentStatus;
 };
 
 #endif // MAINWINDOW_H
