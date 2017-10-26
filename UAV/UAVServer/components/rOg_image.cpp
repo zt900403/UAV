@@ -1,6 +1,9 @@
 #include "rOg_image.h"
-
-
+#include "utils/filesystem.h"
+#include <QDir>
+#include <QDebug>
+#include <QSize>
+#include <QMatrix>
 // Constructor of the class, create the scene and set default parameters
 rOg_image::rOg_image(QWidget * parent, bool isContextualMenu):
     QGraphicsView(parent)
@@ -64,10 +67,31 @@ void rOg_image::showContextMenu(const QPoint & pos)
     contextMenu.exec(globalPos);
 }
 
+int rOg_image::yaw() const
+{
+    return m_yaw;
+}
+
+void rOg_image::setYaw(int yaw)
+{
+    m_yaw = yaw;
+}
+
+QPoint rOg_image::gisPosition() const
+{
+    return m_gisPosition;
+}
+
+void rOg_image::setGisPosition(const QPoint &gisPosition)
+{
+    m_gisPosition = gisPosition;
+}
+
 
 
 
 // Set or update the image in the scene
+
 void rOg_image::setImage(const QImage & image)
 {
     // Update the pixmap in the scene
@@ -237,11 +261,21 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
     painter->setBrush(b);
     QRectF i = this->mapToScene(this->viewport()->geometry()).boundingRect();
     QPixmap pixmap2 = pixmap;
+
     QPainter p(&pixmap2);
+    QSize picSize(100,100);
+    QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("UAV.png");
+    QPixmap image(imageDir);
+    image = image.scaled(picSize,Qt::KeepAspectRatio);
+
+    QMatrix leftmatrix;
+    leftmatrix.rotate(m_yaw);
+    p.drawPixmap(m_gisPosition.x(),m_gisPosition.y(), image.transformed(leftmatrix,Qt::SmoothTransformation));
+
+
     p.setRenderHint(QPainter::Antialiasing);
     p.setBrush(b);
-    QRectF f(i.topLeft() + QPoint(10, 10), i.topLeft() + QPoint(200, 100));
-
+    QRectF f(i.topLeft() + QPoint(10, 10), i.topLeft() + QPoint(200, 100));    
     QPainterPath path;
     path.addRoundedRect(f, 10, 10);
 
@@ -254,6 +288,6 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
     p.drawText(f.adjusted(5, 5, 0, 0), tr("天气: 晴\n风向: 东南"));
 //    p.drawText(f.adjusted(5, 25, 0, 0), tr("风向: 东南"));
     p.end();
+
     pixmapItem->setPixmap(pixmap2);
 }
-

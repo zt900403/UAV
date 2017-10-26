@@ -105,7 +105,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
     float seedtmp = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
     m_airspeed = (m_airspeed + seedtmp) > 125.0f ? (m_airspeed +seedtmp) : 125.0f;
     m_altitude = m_altitude + m_airspeed * sin(m_Status_pitch/360*2*3.1415926);
-    horizontalSpeed = m_airspeed * cos(m_Status_pitch/360*2*3.1415926);
+    m_airspeed = m_airspeed * cos(m_Status_pitch/360*2*3.1415926);
 
     machNo = m_airspeed / 650.0f;
 

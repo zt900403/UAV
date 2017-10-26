@@ -30,6 +30,8 @@ class rOg_image : public QGraphicsView
 public:
 
 
+
+
     /*!
      * \brief rOg_image             Constructor, create the scene and set parameters
      * \param isContextualMenu      When set to true, the contextual menu is initialize
@@ -71,6 +73,12 @@ public:
     void                    setZoomCtrlFactor(const double factor) {zoomCtrlFactor=factor; }
 
 
+
+    QPoint gisPosition() const;
+    void setGisPosition(const QPoint &gisPosition);
+
+    int yaw() const;
+    void setYaw(int yaw);
 
 public slots:
 
@@ -183,8 +191,11 @@ private:
 
     // Current pixmap
     QPixmap                 pixmap;
-
     QVector<QPoint> pathVector;
+
+    QPoint m_gisPosition;
+    int m_yaw;
+
 };
 
 #endif // rOg_image_H
