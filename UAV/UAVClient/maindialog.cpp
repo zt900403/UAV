@@ -20,9 +20,9 @@ MainDialog::MainDialog(QWidget *parent) :
     ui->setupUi(this);
 
 
-    QTimer *timer = new QTimer(this);
+//    QTimer *timer = new QTimer(this);
 
-    timer->start(1000);
+//    timer->start(1000);
     ui->weapenTreeWidget->setCurrentIndex(QModelIndex());
 
     m_timerId = startTimer(1000 / 30);
@@ -56,7 +56,7 @@ MainDialog::MainDialog(QWidget *parent) :
     initPFD();
 
 //    connect(&m_tcpSocket, SIGNAL(connected()), this, SLOT(sendUAVStatus()));
-    connect(&m_tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
+    connect(&m_tcpSocket, SIGNAL(disconnected()), this, SLOT(onConnectionClosed()));
     connect(&m_tcpSocket, SIGNAL(readyRead()), this, SLOT(updateWidgets()));
     connect(&m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
 
@@ -67,6 +67,7 @@ MainDialog::~MainDialog()
     delete ui;
     if (m_timerId) killTimer(m_timerId);
 //    QObject::disconnect(ui->UAV_rollAndPitchController, SIGNAL(rollAndPitch(float, float)), this, SLOT(onRollAndPitch(float, float)));
+    if (m_tcpSocket.isOpen()) m_tcpSocket.close();
 }
 
 void MainDialog::onRollAndPitch(float roll, float pitch)
@@ -85,9 +86,6 @@ void MainDialog::timerEvent(QTimerEvent *event)
 {
     QDialog::timerEvent(event);
 
-    if (!m_tcpSocket.isOpen()) {
-        m_tcpSocket.connectToHost(m_ip, m_port);
-    }
 
     float timeStep = m_time.restart();
     m_realTime = m_realTime + timeStep / 1000.0f;
@@ -224,10 +222,12 @@ void MainDialog::sendUAVStatus(const UAVStatus &status)
 
 void MainDialog::sendCloseSign()
 {
+//    QDataStream out(&m_tcpSocket);
+//    out << qint64(0xFFFFFFFF);
     QDataStream out(&m_tcpSocket);
+    out.setVersion(QDataStream::Qt_4_8);
     out << qint64(0xFFFFFFFF);
     m_tcpSocket.flush();
-    m_tcpSocket.close();
 }
 
 void MainDialog::closeEvent(QCloseEvent *event)
@@ -248,7 +248,14 @@ void MainDialog::closeEvent(QCloseEvent *event)
     }
 }
 
-void MainDialog::connectionClosedByServer()
+void MainDialog::connectToHost()
+{
+    if (!m_tcpSocket.isOpen()) {
+        m_tcpSocket.connectToHost(m_ip, m_port);
+    }
+}
+
+void MainDialog::onConnectionClosed()
 {
     if (m_nextBlockSize != 0xFFFFFFFF) {
 

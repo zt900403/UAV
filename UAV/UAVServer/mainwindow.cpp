@@ -19,12 +19,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
     QImage image(imageDir);
-    ui->gisView->setGisPosition(QPoint(500,500));
+
+    ui->gisView->setLastGisPosition(QPoint(500,500));
+    ui->gisView->setGisPosition(QPoint(500, 500));
+    m_UAVGisPostion.setX(500);
+    m_UAVGisPostion.setY(500);
+
     ui->gisView->setYaw(-46);
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
     ui->gisView->update();
-
 
     updateUavMetaDataGroup();
 
@@ -252,8 +256,6 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
         addUAVStatusTab(id, u);
 }
 
-QPointF UAVGisPostion(1000,1000);
-
 void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 {
     m_idUAVStatusMap[id] = status;
@@ -270,11 +272,12 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 
 
         // 更新位置
-        QPointF velocity(m_currentStatus.airSpeed()*sin(m_currentStatus.yaw()*2*3.1415926/360),-m_currentStatus.airSpeed()*cos(m_currentStatus.yaw()*2*3.1415926/360));
-        UAVGisPostion += velocity/100;
+        QPointF velocity(m_currentStatus.airSpeed()*sin(m_currentStatus.yaw() * 3.1415926 / 180),
+                         -m_currentStatus.airSpeed()*cos(m_currentStatus.yaw() * 3.1415926 / 180));
+        m_UAVGisPostion += velocity / 100;
 
-        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
-        ui->gisView->setGisPosition(UAVGisPostion.toPoint());
+//        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
+        ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());
         ui->gisView->setYaw(m_currentStatus.yaw());
         ui->gisView->update();
     }

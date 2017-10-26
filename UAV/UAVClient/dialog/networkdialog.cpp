@@ -133,6 +133,7 @@ void NetworkDialog::sendCloseSign()
 {
     QDataStream out(&m_tcpSocket);
     out << qint64(0xFFFFFFFF);
+    m_tcpSocket.flush();
 }
 
 int NetworkDialog::index() const

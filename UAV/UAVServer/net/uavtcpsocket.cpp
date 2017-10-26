@@ -22,53 +22,57 @@ void UAVTcpSocket::readClient()
     in.setVersion(QDataStream::Qt_4_8);
 
 
-    if (m_nextBlockSize == 0) {
-        if (bytesAvailable() < sizeof(qint64))
-            return ;
-        in >> m_nextBlockSize;
-    }
-    if (m_nextBlockSize == 0xFFFFFFFF) {
-        QString ip = getClientIp();
-        int id = m_ipIdMap[ip];
-        m_ipIdMap.remove(ip);
-        emit closeByClient(id);
-        close();
-        return ;
-    }
-
-    if (bytesAvailable() < m_nextBlockSize)
-        return ;
-
-    QString requestType;
-    in >> requestType;
-    if (requestType == "P0") {
-        sendUAVsAndWeapons();
-    }
-    if (requestType == "P1") {
-        quint8 index;
-        QString name;
-        in >> index >> name;
-        if (m_uavs[index].name() == name) {
-            int id = sendId();
-            emit createUAV(id, index, name);
+    forever {
+        if (m_nextBlockSize == 0) {
+            if (bytesAvailable() < sizeof(qint64))
+                break ;
+            in >> m_nextBlockSize;
         }
-        sendCloseSign();
+        if (m_nextBlockSize == 0xFFFFFFFF) {
+            QString ip = getClientIp();
+            int id = m_ipIdMap[ip];
+            m_ipIdMap.remove(ip);
+            emit closeByClient(id);
+            close();
+            break ;
+        }
+
+        if (bytesAvailable() < m_nextBlockSize)
+            break ;
+
+        QString requestType;
+        in >> requestType;
+        if (requestType == "P0") {
+            sendUAVsAndWeapons();
+        }
+        if (requestType == "P1") {
+            quint8 index;
+            QString name;
+            in >> index >> name;
+            if (m_uavs[index].name() == name) {
+                int id = sendId();
+                emit createUAV(id, index, name);
+            }
+            sendCloseSign();
+        }
+        if (requestType == "P2") {
+            quint8 id;
+            qint64 frameNum;
+            UAVStatus status;
+            in >> id
+                    >> frameNum
+                    >> status;
+            emit updateUAVStatus(id, frameNum, status);
+        }
+        m_nextBlockSize = 0;
     }
-    if (requestType == "P2") {
-        quint8 id;
-        qint64 frameNum;
-        UAVStatus status;
-        in >> id
-                >> frameNum
-                >> status;
-        emit updateUAVStatus(id, frameNum, status);
-    }
-    m_nextBlockSize = 0;
+
 }
 
 void UAVTcpSocket::sendCloseSign()
 {
     QDataStream out(this);
+    out.setVersion(QDataStream::Qt_4_8);
     out << qint64(0xFFFFFFFF);
     flush();
     close();

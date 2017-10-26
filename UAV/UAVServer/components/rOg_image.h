@@ -80,6 +80,9 @@ public:
     int yaw() const;
     void setYaw(int yaw);
 
+    QPoint lastGisPosition() const;
+    void setLastGisPosition(const QPoint &lastGisPosition);
+
 public slots:
 
     /*!
@@ -191,11 +194,14 @@ private:
 
     // Current pixmap
     QPixmap                 pixmap;
-    QVector<QPoint> pathVector;
+
+//    QVector<QPoint> pathVector;
 
     QPoint m_gisPosition;
     int m_yaw;
-
+    QPixmap m_uavPixmap;
+    QPoint m_lastGisPosition;
+    bool m_drawLine;
 };
 
 #endif // rOg_image_H

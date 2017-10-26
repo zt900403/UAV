@@ -57,9 +57,11 @@ private:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void connectionClosedByServer();
+    void onConnectionClosed();
     void updateWidgets();
     void error();
+public:
+    void connectToHost();
 private:
     Ui::MainDialog *ui;
     int m_timerId;
