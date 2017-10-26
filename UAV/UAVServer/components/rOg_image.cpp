@@ -270,7 +270,9 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
 
     QMatrix leftmatrix;
     leftmatrix.rotate(m_yaw);
-    p.drawPixmap(m_gisPosition.x(),m_gisPosition.y(), image.transformed(leftmatrix,Qt::SmoothTransformation));
+    QPixmap imageRot = image.transformed(leftmatrix,Qt::SmoothTransformation);
+
+    p.drawPixmap(m_gisPosition.x()-imageRot.width()/2,m_gisPosition.y()-imageRot.height()/2,imageRot );
 
 
     p.setRenderHint(QPainter::Antialiasing);
