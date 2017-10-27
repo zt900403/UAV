@@ -43,7 +43,7 @@ private slots:
 
 
 private:
-    void createTableHeader(const QVector<QPair<QString, QString> > &vect,
+    void createTableHeader(const QtJson::JsonArray &array,
                            QTableWidget *table, int columnCnt);
 
     void updateAllTableWithFile();
@@ -63,6 +63,8 @@ private:
     Ui::UAVTypeDataDialog *ui;
     QtJson::JsonArray m_uavs;
     QtJson::JsonArray m_weapons;
+    QtJson::JsonArray m_uavMetaData;
+    QtJson::JsonArray m_weaponMetaData;
 };
 
 #endif // UAVTYPEDATADIALOG_H
