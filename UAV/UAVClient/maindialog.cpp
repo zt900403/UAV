@@ -113,7 +113,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
     ui->widgetPFD->setAirspeed(m_airspeed);
 //    ui->widgetPFD->setPressure(pressure);
     ui->widgetPFD->setMachNo(machNo);
-    ui->widgetPFD->setAltitude(altitude);
+    ui->widgetPFD->setAltitude(m_altitude);
     ui->widgetPFD->setClimbRate(climbRate);
     ui->widgetPFD->update();
 

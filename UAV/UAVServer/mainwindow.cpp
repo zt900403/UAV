@@ -281,30 +281,6 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
         ui->gisView->setYaw(m_currentStatus.yaw());
         ui->gisView->update();
     }
-//    QTabWidget *t = ui->uavStatusTabWidget;
-//    int len = t->count();
-//    int index = -1;
-//    QString tabTitle = m_uavs[status.index()].name();
-//    tabTitle += "#";
-//    tabTitle += QString::number(id);
-//    for (int i = 0; i < len; ++i) {
-//        if (t->tabText(i) == tabTitle) {
-//            index = i;
-//            break;
-//        }
-//    }
-
-//    qDebug() << id
-//             << "roll:"
-//             << status.roll()
-//             << "pinch:"
-//             << status.pinch()
-//             << "yaw:"
-//             << status.yaw()
-//             << "空速:"
-//             << status.airSpeed()
-//             << "高度:"
-    //             << status.altitude();
 }
 
 void MainWindow::onCloseByClient(int id)
