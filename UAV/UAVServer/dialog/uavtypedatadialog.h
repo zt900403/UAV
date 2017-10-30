@@ -42,6 +42,14 @@ private slots:
     void on_saveBtn_clicked();
 
 
+    void on_addDetectionType_clicked();
+
+    void on_delDetectionType_clicked();
+
+    void on_addDetectionBtn_clicked();
+
+    void on_delDetectionBtn_clicked();
+
 private:
     void createTableHeader(const QtJson::JsonArray &array,
                            QTableWidget *table, int columnCnt);
@@ -63,8 +71,11 @@ private:
     Ui::UAVTypeDataDialog *ui;
     QtJson::JsonArray m_uavs;
     QtJson::JsonArray m_weapons;
+    QtJson::JsonArray m_detectionEqus;
+
     QtJson::JsonArray m_uavMetaData;
     QtJson::JsonArray m_weaponMetaData;
+    QtJson::JsonArray m_detectionEquMetaData;
 };
 
 #endif // UAVTYPEDATADIALOG_H

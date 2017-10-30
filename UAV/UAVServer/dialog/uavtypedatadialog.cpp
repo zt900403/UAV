@@ -40,11 +40,15 @@ void UAVTypeDataDialog::updateAllTableWithFile()
 
     m_uavs = result["uavs"].toList();
     m_weapons = result["weapons"].toList();
+    m_detectionEqus = result["detectionEquipments"].toList();
+
     m_uavMetaData = result["uavMetaData"].toList();
     m_weaponMetaData = result["weaponMetaData"].toList();
+    m_detectionEquMetaData = result["detectionEquipmentMetaData"].toList();
 
     createTableHeader(m_uavMetaData, ui->uavTableWidget, m_uavMetaData.size());
     createTableHeader(m_weaponMetaData, ui->weaponTypeDataTableWidget, m_weaponMetaData.size());
+    createTableHeader(m_detectionEquMetaData, ui->detectionTableWidget, m_detectionEquMetaData.size());
     QtJson::JsonArray weapon;
     QtJson::JsonObject col1;
     col1["name"] = "name";
@@ -55,6 +59,12 @@ void UAVTypeDataDialog::updateAllTableWithFile()
     weapon.append(col1);
     weapon.append(col2);
     createTableHeader(weapon, ui->currentWeaponTableWidget, weapon.size());
+    QtJson::JsonArray detection;
+    QtJson::JsonObject d1;
+    d1["name"] = "name";
+    d1["description"] = "名称";
+    detection.append(d1);
+    createTableHeader(detection, ui->currentDetectionTableWidget, detection.size());
     updateAllTable();
 }
 
@@ -159,17 +169,21 @@ void UAVTypeDataDialog::on_uavTypeComboBox_currentIndexChanged(const QString &ar
 {
     ui->currentWeaponTableWidget->clearContents();
     ui->currentWeaponTableWidget->setRowCount(0);
+    ui->currentDetectionTableWidget->clearContents();
+    ui->currentDetectionTableWidget->setRowCount(0);
 
     QtJson::JsonArray weapons;
+    QtJson::JsonArray detections;
     foreach(QVariant var, m_uavs) {
         QtJson::JsonObject obj = var.toMap();
         if (obj["name"].toString() == arg1) {
             weapons = obj["weapon"].toList();
+            detections = obj["detectionEquipments"].toList();
             break;
         }
     }
-    QTableWidget *table = ui->currentWeaponTableWidget;
 
+    QTableWidget *table = ui->currentWeaponTableWidget;
     foreach(QVariant var, weapons) {
         QtJson::JsonObject obj = var.toMap();
         int i = table->rowCount();
@@ -177,6 +191,15 @@ void UAVTypeDataDialog::on_uavTypeComboBox_currentIndexChanged(const QString &ar
         int j = 0;
         table->setItem(i, j++, new QTableWidgetItem(obj["name"].toString()));
         table->setItem(i, j++, new QTableWidgetItem(obj["amount"].toString()));
+    }
+
+    table = ui->currentDetectionTableWidget;
+    foreach(QVariant var, detections) {
+        QtJson::JsonObject obj = var.toMap();
+        int i = table->rowCount();
+        table->insertRow(i);
+        int j = 0;
+        table->setItem(i, j++, new QTableWidgetItem(obj["name"].toString()));
     }
 }
 
@@ -196,8 +219,10 @@ void UAVTypeDataDialog::saveFile(const QString &filename)
     QtJson::JsonObject obj;
     obj["uavMetaData"] = m_uavMetaData;
     obj["weaponMetaData"] = m_weaponMetaData;
+    obj["detectionEquipmentMetaData"] = m_detectionEquMetaData;
     obj["uavs"] = m_uavs;
     obj["weapons"] = m_weapons;
+    obj["detectionEquipments"] = m_detectionEqus;
     bool ok;
     QString str = QtJson::serializeStr(obj, ok);
     if (!ok) {
@@ -245,6 +270,8 @@ void UAVTypeDataDialog::on_delWeaponTypeBtn_clicked()
     QTableWidget *t = ui->weaponTypeDataTableWidget;
     int cur = t->currentRow();
     deleteRow(t, m_weapons, cur);
+    m_weapons.removeAt(cur);
+
 }
 
 void UAVTypeDataDialog::on_addWeaponBtn_clicked()
@@ -280,18 +307,20 @@ void UAVTypeDataDialog::on_delWeaponBtn_clicked()
 {
     QTableWidget *t = ui->currentWeaponTableWidget;
     int cur = t->currentRow();
-    QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
-    t->removeRow(cur);
-    t->setCurrentCell(-1, -1);
-    int index = ui->uavTypeComboBox->currentIndex();
-    QtJson::JsonObject uav = m_uavs[index].toMap();
-    QtJson::JsonArray array = uav["weapon"].toList();
-    int i = indexOfObjectValue(array, "name", name);
-    if (i != -1) {
-        array.removeAt(i);
+    if (cur != -1) {
+        QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
+        t->removeRow(cur);
+        t->setCurrentCell(-1, -1);
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonArray array = uav["weapon"].toList();
+        int i = indexOfObjectValue(array, "name", name);
+        if (i != -1) {
+            array.removeAt(i);
+        }
+        uav["weapon"] = array;
+        m_uavs.replace(index, uav);
     }
-    uav["weapon"] = array;
-    m_uavs.replace(index, uav);
 }
 
 
@@ -323,7 +352,18 @@ void UAVTypeDataDialog::updateAllTable()
             QtJson::JsonObject a = attr.toMap();
             table->setItem(i, j++, new QTableWidgetItem(obj[a["name"].toString()].toString()));
         }
+    }
 
+    table = ui->detectionTableWidget;
+    foreach(QVariant var, m_detectionEqus) {
+        QtJson::JsonObject obj = var.toMap();
+        int i = table->rowCount();
+        table->insertRow(i);
+        int j = 0;
+        foreach(QVariant attr, m_detectionEquMetaData) {
+            QtJson::JsonObject a = attr.toMap();
+            table->setItem(i, j++, new QTableWidgetItem(obj[a["name"].toString()].toString()));
+        }
     }
 
     updateUAVComboBox();
@@ -406,4 +446,67 @@ void UAVTypeDataDialog::on_saveBtn_clicked()
 {
     QString path = FileSystem::directoryOf("config").absoluteFilePath("uvatype.json");
     saveFile(path);
+}
+
+void UAVTypeDataDialog::on_addDetectionType_clicked()
+{
+    QTableWidget *t = ui->detectionTableWidget;
+    addRow(t, m_detectionEqus);
+}
+
+void UAVTypeDataDialog::on_delDetectionType_clicked()
+{
+    QTableWidget *t = ui->detectionTableWidget;
+    int cur = t->currentRow();
+    deleteRow(t, m_detectionEqus, cur);
+    m_detectionEqus.removeAt(cur);
+
+}
+
+void UAVTypeDataDialog::on_addDetectionBtn_clicked()
+{
+    QTableWidget *ct = ui->currentDetectionTableWidget;
+    QTableWidget *t = ui->detectionTableWidget;
+    int tRow = t->currentRow();
+    if (tRow != -1) {
+        QString name = t->item(tRow, 0)->data(Qt::DisplayRole).toString();
+        //检查添加武器是否已经存在
+        if (indexOfItemValue(ct, 0, name) != -1) {
+            QMessageBox::critical(this, tr("错误"),
+                                  tr("选择的探测设备已经存在!"));
+            return ;
+        }
+        int cur = ct->rowCount();
+        ct->insertRow(cur);
+        ct->setItem(cur, 0, new QTableWidgetItem(name));
+
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonObject detection;
+        detection["name"] = name;
+        QtJson::JsonArray array = uav["detectionEquipments"].toList();
+        array.append(detection);
+        uav["detectionEquipments"] = array;
+        m_uavs.replace(index, uav);
+    }
+}
+
+void UAVTypeDataDialog::on_delDetectionBtn_clicked()
+{
+    QTableWidget *t = ui->currentDetectionTableWidget;
+    int cur = t->currentRow();
+    if (cur != -1) {
+        QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
+        t->removeRow(cur);
+        t->setCurrentCell(-1, -1);
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonArray array = uav["detectionEquipments"].toList();
+        int i = indexOfObjectValue(array, "name", name);
+        if (i != -1) {
+            array.removeAt(i);
+        }
+        uav["detectionEquipments"] = array;
+        m_uavs.replace(index, uav);
+    }
 }
