@@ -79,6 +79,9 @@ void MainDialog::onRollAndPitch(float roll, float pitch)
     ui->pitchEdit->setText(QString::number(pitch));
     m_Status_pitch = pitch;
     m_Status_roll = roll;
+    //调整roll的同时，计算yaw
+
+    //if(yaw)
 }
 
 
@@ -99,11 +102,37 @@ void MainDialog::timerEvent(QTimerEvent *event)
 
     m_Status_roll = 180.0f * sin(m_realTime / 10.0f);
 //    heading = 360.0f * sin(m_realTime / 40.0f);
-    float horizontalSpeed;
-    float seedtmp = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
-    m_airspeed = (m_airspeed + seedtmp) > 125.0f ? (m_airspeed +seedtmp) : 125.0f;
-    m_altitude = m_altitude + m_airspeed * sin(m_Status_pitch/360*2*3.1415926);
-    m_airspeed = m_airspeed * cos(m_Status_pitch/360*2*3.1415926);
+    //float horizontalSpeed;
+    float speeddelta = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
+    m_airspeed = (m_airspeed + speeddelta) > 125.0f ? (m_airspeed +speeddelta) : 125.0f;
+    m_altitude = m_altitude + m_airspeed * tan(m_Status_pitch/360*2*PI);
+
+    /*
+    float accelerationN = 100 * sin(m_Status_roll);
+    QPointF At(speeddelta*sin(m_currentUAVstatus.yaw()*2*PI/360), speeddelta*cos(m_currentUAVstatus.yaw()*2*PI/360));
+
+    QPointF An(accelerationN*sin((m_currentUAVstatus.yaw()+90)), accelerationN*cos((m_currentUAVstatus.yaw()+90)));
+
+    QPointF Velocity(m_airspeed * sin(m_currentUAVstatus.yaw()), m_airspeed * cos(m_currentUAVstatus.yaw()));
+    Velocity+= (An + At);
+    float tmpyaw = qAtan(Velocity.x()/Velocity.y())/(2*PI)*360;
+    if(Velocity.y()>0)
+    {
+        ui->yawSlider->setValue(tmpyaw);
+    }else
+    {
+        if (tmpyaw<0)
+        {
+            ui->yawSlider->setValue(-180-tmpyaw);
+        }else
+        {
+            ui->yawSlider->setValue(180-tmpyaw);
+        }
+    }
+    //yaw = qAtan(Velocity.x()/Velocity.y());
+
+
+*/
 
     machNo = m_airspeed / 650.0f;
 
@@ -130,6 +159,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
                          QTime(),
                          m_uav.weapon());
         sendUAVStatus(status);
+        m_currentUAVstatus = status;
     }
 }
 
