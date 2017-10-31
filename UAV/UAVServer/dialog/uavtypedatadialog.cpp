@@ -14,34 +14,6 @@ UAVTypeDataDialog::UAVTypeDataDialog(QWidget *parent) :
     ui(new Ui::UAVTypeDataDialog)
 {
     ui->setupUi(this);
-//    QMap<QString, QString> uavMap;
-    QVector<QPair<QString, QString> > uavVect;
-    uavVect.append(QPair<QString, QString>("name", "名称"));
-    uavVect.append(QPair<QString, QString>("weight", "自重(kg)"));
-    uavVect.append(QPair<QString, QString>("voyage", "航程(km)"));
-    uavVect.append(QPair<QString, QString>("flightHeight", "航高(m)"));
-    uavVect.append(QPair<QString, QString>("flyEndurance", "续航m"));
-    uavVect.append(QPair<QString, QString>("maxSpeed", "最高时速(km/h)"));
-    uavVect.append(QPair<QString, QString>("acceleration", "提升加速度(km/s^2)"));
-    uavVect.append(QPair<QString, QString>("loadWeight", "载荷(kg)"));
-    uavVect.append(QPair<QString, QString>("imageFile", "图片"));
-    uavVect.append(QPair<QString, QString>("description", "描述"));
-    createTableHeader(uavVect, ui->uavTableWidget, uavVect.size());
-
-    QVector<QPair<QString, QString> > weaponVector;
-    weaponVector.append(QPair<QString, QString>("name", "名称"));
-    weaponVector.append(QPair<QString, QString>("R_L", "尺寸(m)"));
-    weaponVector.append(QPair<QString, QString>("weight", "重量(kg)"));
-    weaponVector.append(QPair<QString, QString>("guidedType", "制导方式"));
-    weaponVector.append(QPair<QString, QString>("fieldOfFire", "有效射程(km)"));
-    weaponVector.append(QPair<QString, QString>("killRadius", "杀伤半径(m)"));
-    weaponVector.append(QPair<QString, QString>("description", "描述"));
-    createTableHeader(weaponVector, ui->weaponTypeDataTableWidget, weaponVector.size());
-
-    QVector<QPair<QString, QString> > curWeaponVect;
-    curWeaponVect.append(QPair<QString, QString>("name", "名称"));
-    curWeaponVect.append(QPair<QString, QString>("amount", "数量"));
-    createTableHeader(curWeaponVect, ui->currentWeaponTableWidget, curWeaponVect.size());
     updateAllTableWithFile();
 }
 
@@ -68,7 +40,31 @@ void UAVTypeDataDialog::updateAllTableWithFile()
 
     m_uavs = result["uavs"].toList();
     m_weapons = result["weapons"].toList();
+    m_detectionEqus = result["detectionEquipments"].toList();
 
+    m_uavMetaData = result["uavMetaData"].toList();
+    m_weaponMetaData = result["weaponMetaData"].toList();
+    m_detectionEquMetaData = result["detectionEquipmentMetaData"].toList();
+
+    createTableHeader(m_uavMetaData, ui->uavTableWidget, m_uavMetaData.size());
+    createTableHeader(m_weaponMetaData, ui->weaponTypeDataTableWidget, m_weaponMetaData.size());
+    createTableHeader(m_detectionEquMetaData, ui->detectionTableWidget, m_detectionEquMetaData.size());
+    QtJson::JsonArray weapon;
+    QtJson::JsonObject col1;
+    col1["name"] = "name";
+    col1["description"] = "名称";
+    QtJson::JsonObject col2;
+    col2["name"] = "amount";
+    col2["description"] = "数量";
+    weapon.append(col1);
+    weapon.append(col2);
+    createTableHeader(weapon, ui->currentWeaponTableWidget, weapon.size());
+    QtJson::JsonArray detection;
+    QtJson::JsonObject d1;
+    d1["name"] = "name";
+    d1["description"] = "名称";
+    detection.append(d1);
+    createTableHeader(detection, ui->currentDetectionTableWidget, detection.size());
     updateAllTable();
 }
 
@@ -173,17 +169,21 @@ void UAVTypeDataDialog::on_uavTypeComboBox_currentIndexChanged(const QString &ar
 {
     ui->currentWeaponTableWidget->clearContents();
     ui->currentWeaponTableWidget->setRowCount(0);
+    ui->currentDetectionTableWidget->clearContents();
+    ui->currentDetectionTableWidget->setRowCount(0);
 
     QtJson::JsonArray weapons;
+    QtJson::JsonArray detections;
     foreach(QVariant var, m_uavs) {
         QtJson::JsonObject obj = var.toMap();
         if (obj["name"].toString() == arg1) {
             weapons = obj["weapon"].toList();
+            detections = obj["detectionEquipments"].toList();
             break;
         }
     }
-    QTableWidget *table = ui->currentWeaponTableWidget;
 
+    QTableWidget *table = ui->currentWeaponTableWidget;
     foreach(QVariant var, weapons) {
         QtJson::JsonObject obj = var.toMap();
         int i = table->rowCount();
@@ -191,6 +191,15 @@ void UAVTypeDataDialog::on_uavTypeComboBox_currentIndexChanged(const QString &ar
         int j = 0;
         table->setItem(i, j++, new QTableWidgetItem(obj["name"].toString()));
         table->setItem(i, j++, new QTableWidgetItem(obj["amount"].toString()));
+    }
+
+    table = ui->currentDetectionTableWidget;
+    foreach(QVariant var, detections) {
+        QtJson::JsonObject obj = var.toMap();
+        int i = table->rowCount();
+        table->insertRow(i);
+        int j = 0;
+        table->setItem(i, j++, new QTableWidgetItem(obj["name"].toString()));
     }
 }
 
@@ -208,8 +217,12 @@ void UAVTypeDataDialog::addRow(QTableWidget *table, QtJson::JsonArray &array)
 void UAVTypeDataDialog::saveFile(const QString &filename)
 {
     QtJson::JsonObject obj;
+    obj["uavMetaData"] = m_uavMetaData;
+    obj["weaponMetaData"] = m_weaponMetaData;
+    obj["detectionEquipmentMetaData"] = m_detectionEquMetaData;
     obj["uavs"] = m_uavs;
     obj["weapons"] = m_weapons;
+    obj["detectionEquipments"] = m_detectionEqus;
     bool ok;
     QString str = QtJson::serializeStr(obj, ok);
     if (!ok) {
@@ -257,6 +270,8 @@ void UAVTypeDataDialog::on_delWeaponTypeBtn_clicked()
     QTableWidget *t = ui->weaponTypeDataTableWidget;
     int cur = t->currentRow();
     deleteRow(t, m_weapons, cur);
+    m_weapons.removeAt(cur);
+
 }
 
 void UAVTypeDataDialog::on_addWeaponBtn_clicked()
@@ -292,18 +307,20 @@ void UAVTypeDataDialog::on_delWeaponBtn_clicked()
 {
     QTableWidget *t = ui->currentWeaponTableWidget;
     int cur = t->currentRow();
-    QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
-    t->removeRow(cur);
-    t->setCurrentCell(-1, -1);
-    int index = ui->uavTypeComboBox->currentIndex();
-    QtJson::JsonObject uav = m_uavs[index].toMap();
-    QtJson::JsonArray array = uav["weapon"].toList();
-    int i = indexOfObjectValue(array, "name", name);
-    if (i != -1) {
-        array.removeAt(i);
+    if (cur != -1) {
+        QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
+        t->removeRow(cur);
+        t->setCurrentCell(-1, -1);
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonArray array = uav["weapon"].toList();
+        int i = indexOfObjectValue(array, "name", name);
+        if (i != -1) {
+            array.removeAt(i);
+        }
+        uav["weapon"] = array;
+        m_uavs.replace(index, uav);
     }
-    uav["weapon"] = array;
-    m_uavs.replace(index, uav);
 }
 
 
@@ -317,17 +334,10 @@ void UAVTypeDataDialog::updateAllTable()
         int i = table->rowCount();
         table->insertRow(i);
         int j = 0;
-        QString name = obj["name"].toString();
-        table->setItem(i, j++, new QTableWidgetItem(name));
-        table->setItem(i, j++, new QTableWidgetItem(obj["weight"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["voyage"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["flightHeight"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["flyEndurance"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["maxSpeed"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["acceleration"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["loadWeight"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["imageFile"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["description"].toString()));
+        foreach(QVariant attr, m_uavMetaData) {
+            QtJson::JsonObject a = attr.toMap();
+            table->setItem(i, j++, new QTableWidgetItem(obj[a["name"].toString()].toString()));
+        }
     }
 
 
@@ -338,13 +348,22 @@ void UAVTypeDataDialog::updateAllTable()
         int i = table->rowCount();
         table->insertRow(i);
         int j = 0;
-        table->setItem(i, j++, new QTableWidgetItem(obj["name"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["R_L"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["weight"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["guidedType"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["fieldOfFire"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["killRadius"].toString()));
-        table->setItem(i, j++, new QTableWidgetItem(obj["description"].toString()));
+        foreach(QVariant attr, m_weaponMetaData) {
+            QtJson::JsonObject a = attr.toMap();
+            table->setItem(i, j++, new QTableWidgetItem(obj[a["name"].toString()].toString()));
+        }
+    }
+
+    table = ui->detectionTableWidget;
+    foreach(QVariant var, m_detectionEqus) {
+        QtJson::JsonObject obj = var.toMap();
+        int i = table->rowCount();
+        table->insertRow(i);
+        int j = 0;
+        foreach(QVariant attr, m_detectionEquMetaData) {
+            QtJson::JsonObject a = attr.toMap();
+            table->setItem(i, j++, new QTableWidgetItem(obj[a["name"].toString()].toString()));
+        }
     }
 
     updateUAVComboBox();
@@ -369,14 +388,16 @@ void UAVTypeDataDialog::on_uavTableWidget_cellChanged(int row, int column)
     }
 }
 
-void UAVTypeDataDialog::createTableHeader(const QVector<QPair<QString, QString> > &vect, QTableWidget *table, int columnCnt)
+void UAVTypeDataDialog::createTableHeader(const QtJson::JsonArray &array, QTableWidget *table, int columnCnt)
 {
     table->setColumnCount(columnCnt);
     int j = 0;
-    for(QVector<QPair<QString, QString> >::const_iterator i = vect.begin();
-        i != vect.end(); ++i) {
-        QTableWidgetItem *temp = new QTableWidgetItem(i->second);
-        temp->setData(Qt::UserRole, i->first);
+    foreach(QVariant var, array) {
+        QtJson::JsonObject obj = var.toMap();
+        QString key = obj["name"].toString();
+        QString value = obj["description"].toString();
+        QTableWidgetItem *temp = new QTableWidgetItem(value);
+        temp->setData(Qt::UserRole, key);
         table->setHorizontalHeaderItem(j++, temp);
     }
 }
@@ -425,4 +446,67 @@ void UAVTypeDataDialog::on_saveBtn_clicked()
 {
     QString path = FileSystem::directoryOf("config").absoluteFilePath("uvatype.json");
     saveFile(path);
+}
+
+void UAVTypeDataDialog::on_addDetectionType_clicked()
+{
+    QTableWidget *t = ui->detectionTableWidget;
+    addRow(t, m_detectionEqus);
+}
+
+void UAVTypeDataDialog::on_delDetectionType_clicked()
+{
+    QTableWidget *t = ui->detectionTableWidget;
+    int cur = t->currentRow();
+    deleteRow(t, m_detectionEqus, cur);
+    m_detectionEqus.removeAt(cur);
+
+}
+
+void UAVTypeDataDialog::on_addDetectionBtn_clicked()
+{
+    QTableWidget *ct = ui->currentDetectionTableWidget;
+    QTableWidget *t = ui->detectionTableWidget;
+    int tRow = t->currentRow();
+    if (tRow != -1) {
+        QString name = t->item(tRow, 0)->data(Qt::DisplayRole).toString();
+        //检查添加武器是否已经存在
+        if (indexOfItemValue(ct, 0, name) != -1) {
+            QMessageBox::critical(this, tr("错误"),
+                                  tr("选择的探测设备已经存在!"));
+            return ;
+        }
+        int cur = ct->rowCount();
+        ct->insertRow(cur);
+        ct->setItem(cur, 0, new QTableWidgetItem(name));
+
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonObject detection;
+        detection["name"] = name;
+        QtJson::JsonArray array = uav["detectionEquipments"].toList();
+        array.append(detection);
+        uav["detectionEquipments"] = array;
+        m_uavs.replace(index, uav);
+    }
+}
+
+void UAVTypeDataDialog::on_delDetectionBtn_clicked()
+{
+    QTableWidget *t = ui->currentDetectionTableWidget;
+    int cur = t->currentRow();
+    if (cur != -1) {
+        QString name = t->item(cur, 0)->data(Qt::DisplayRole).toString();
+        t->removeRow(cur);
+        t->setCurrentCell(-1, -1);
+        int index = ui->uavTypeComboBox->currentIndex();
+        QtJson::JsonObject uav = m_uavs[index].toMap();
+        QtJson::JsonArray array = uav["detectionEquipments"].toList();
+        int i = indexOfObjectValue(array, "name", name);
+        if (i != -1) {
+            array.removeAt(i);
+        }
+        uav["detectionEquipments"] = array;
+        m_uavs.replace(index, uav);
+    }
 }

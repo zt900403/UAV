@@ -5,8 +5,9 @@
 #include <QSize>
 #include <QMatrix>
 // Constructor of the class, create the scene and set default parameters
-rOg_image::rOg_image(QWidget * parent, bool isContextualMenu):
-    QGraphicsView(parent)
+rOg_image::rOg_image(QWidget * parent, bool isContextualMenu)
+    : QGraphicsView(parent)
+    , m_drawLine(true)
 {
     // Set default zoom factors
     zoomFactor=DEFAULT_ZOOM_FACTOR;
@@ -43,6 +44,9 @@ rOg_image::rOg_image(QWidget * parent, bool isContextualMenu):
     // Add the default pixmap at startup
     pixmapItem = scene->addPixmap(pixmap);
 
+    QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("UAV.png");
+    m_uavPixmap.load(imageDir);
+    m_uavPixmap = m_uavPixmap.scaled(100, 100, Qt::KeepAspectRatio);
 }
 
 
@@ -65,6 +69,16 @@ void rOg_image::showContextMenu(const QPoint & pos)
     contextMenu.addAction("重置画面", this, SLOT(fitImage()));
     // Display the menu
     contextMenu.exec(globalPos);
+}
+
+QPoint rOg_image::lastGisPosition() const
+{
+    return m_lastGisPosition;
+}
+
+void rOg_image::setLastGisPosition(const QPoint &lastGisPosition)
+{
+    m_lastGisPosition = lastGisPosition;
 }
 
 int rOg_image::yaw() const
@@ -97,8 +111,11 @@ void rOg_image::setImage(const QImage & image)
     // Update the pixmap in the scene
     pixmap=QPixmap::fromImage(image);
     QPainter *paint = new QPainter(&pixmap);
-    paint->setPen(Qt::red);
-    paint->drawLine(100,100,1000,1000);
+//    paint->setPen(Qt::red);
+//    if (!m_firstDrawLine) {
+//        paint->drawLine(m_lastGisPosition, m_gisPosition);
+//        m_lastGisPosition = m_gisPosition;
+//    }
     pixmapItem->setPixmap(pixmap);
     paint->end();
     // Resize the scene (needed is the new image is smaller)
@@ -258,10 +275,6 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
     QPixmap pixmap2 = pixmap;
 
     QPainter p(&pixmap2);
-    QSize picSize(100,100);
-    QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("UAV.png");
-    QPixmap image(imageDir);
-    image = image.scaled(picSize,Qt::KeepAspectRatio);
 
     QMatrix leftmatrix;
     leftmatrix.rotate(m_yaw);
@@ -275,6 +288,7 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
     pixmapItem->setPixmap(pixmap2);
 
 }
+
 
 
 // Define the virtual function to avoid the "unused parameter" warning

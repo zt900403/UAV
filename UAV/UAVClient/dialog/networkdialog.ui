@@ -123,6 +123,9 @@
      </item>
      <item>
       <widget class="QLabel" name="uavImageTextLabel">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
         <string>无人机图片</string>
        </property>

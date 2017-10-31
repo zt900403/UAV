@@ -5,7 +5,6 @@
 #include <object/uav.h>
 #include <object/weapon.h>
 #include <object/uavstatus.h>
-#include <QPicture.h>
 #include "utils/json.h"
 #include <QVector>
 
@@ -56,7 +55,7 @@ private:
     UAVTcpServer *m_tcpserver;
     QMap<int, UAVStatus> m_idUAVStatusMap;
     QMap<int, QWidget*> m_idTabMap;
-    QPoint m_UAVGisPostion;
+    QPointF m_UAVGisPostion;
     UAVStatus m_currentStatus;
 };
 

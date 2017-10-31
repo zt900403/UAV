@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     w.setPort(d.port());
     w.setId(d.id());
     w.setIndex(d.index());
+    w.connectToHost();
     w.show();
     return a.exec();
 }
