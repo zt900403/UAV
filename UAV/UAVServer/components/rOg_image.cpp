@@ -269,20 +269,34 @@ QString rOg_image::setToolTipText(QPoint imageCoordinates)
 // Define the virtual function to avoid the "unused parameter" warning
 void rOg_image::drawOnImage(QPainter* painter , QSize )
 {
-
     QBrush b(Qt::white);
     painter->setBrush(b);
     QPixmap pixmap2 = pixmap;
 
+    QPainter pLine(&pixmap);
+    if (m_drawLine) {
+        QPen pen(Qt::red, 4);
+        pLine.setPen(pen);
+
+        pLine.drawLine(m_lastGisPosition, m_gisPosition);
+        m_lastGisPosition = m_gisPosition;
+    }
+    pLine.end();
+
     QPainter p(&pixmap2);
+
+    if (m_drawLine) {
+        QPen pen(Qt::red);
+        p.setPen(pen);
+        p.drawLine(m_lastGisPosition, m_gisPosition);
+        m_lastGisPosition = m_gisPosition;
+    }
 
     QMatrix leftmatrix;
     leftmatrix.rotate(m_yaw);
-    QPixmap imageRot = image.transformed(leftmatrix,Qt::SmoothTransformation);
+    QPixmap imageRot = m_uavPixmap.transformed(leftmatrix,Qt::SmoothTransformation);
 
     p.drawPixmap(m_gisPosition.x()-imageRot.width()/2,m_gisPosition.y()-imageRot.height()/2,imageRot );
-
-
     p.end();
 
     pixmapItem->setPixmap(pixmap2);
@@ -295,16 +309,13 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
 void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
 {
     QBrush b(Qt::white);
-
-
-
     QPixmap transparentMap(300,300);
     transparentMap.fill(Qt::transparent);
     QPainter p(&transparentMap);
 
     p.setRenderHint(QPainter::Antialiasing);
     p.setBrush(b);
-    QRectF f(QPoint(10, 10), QPoint(200, 100));
+    QRectF f(QPoint(10, 10), QPoint(150, 80));
     QPainterPath path;
     path.addRoundedRect(f, 10, 10);
 
