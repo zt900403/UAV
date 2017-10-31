@@ -108,9 +108,9 @@ void MainDialog::timerEvent(QTimerEvent *event)
     float speeddelta = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);
     m_airspeed = (m_airspeed + speeddelta) > 125.0f ? (m_airspeed +speeddelta) : 125.0f;
     m_altitude = m_altitude + m_airspeed * tan(m_Status_pitch/360*2*PI);
-    float accelerationN = 100 * sin(m_Status_roll);
 
-    //
+    /*
+    float accelerationN = 100 * sin(m_Status_roll);
     QPointF At(speeddelta*sin(m_currentUAVstatus.yaw()*2*PI/360), speeddelta*cos(m_currentUAVstatus.yaw()*2*PI/360));
 
     QPointF An(accelerationN*sin((m_currentUAVstatus.yaw()+90)), accelerationN*cos((m_currentUAVstatus.yaw()+90)));
@@ -134,7 +134,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
     //yaw = qAtan(Velocity.x()/Velocity.y());
 
 
-
+*/
 
     machNo = m_airspeed / 650.0f;
 

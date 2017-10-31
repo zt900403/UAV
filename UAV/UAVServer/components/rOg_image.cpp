@@ -250,16 +250,11 @@ QString rOg_image::setToolTipText(QPoint imageCoordinates)
 
 
 // Define the virtual function to avoid the "unused parameter" warning
-void rOg_image::drawOnImage(QPainter* , QSize )
-{}
-
-
-// Define the virtual function to avoid the "unused parameter" warning
-void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
+void rOg_image::drawOnImage(QPainter* painter , QSize )
 {
+
     QBrush b(Qt::white);
     painter->setBrush(b);
-    QRectF i = this->mapToScene(this->viewport()->geometry()).boundingRect();
     QPixmap pixmap2 = pixmap;
 
     QPainter p(&pixmap2);
@@ -275,9 +270,27 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
     p.drawPixmap(m_gisPosition.x()-imageRot.width()/2,m_gisPosition.y()-imageRot.height()/2,imageRot );
 
 
+    p.end();
+
+    pixmapItem->setPixmap(pixmap2);
+
+}
+
+
+// Define the virtual function to avoid the "unused parameter" warning
+void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
+{
+    QBrush b(Qt::white);
+
+
+
+    QPixmap transparentMap(300,300);
+    transparentMap.fill(Qt::transparent);
+    QPainter p(&transparentMap);
+
     p.setRenderHint(QPainter::Antialiasing);
     p.setBrush(b);
-    QRectF f(i.topLeft() + QPoint(10, 10), i.topLeft() + QPoint(200, 100));    
+    QRectF f(QPoint(10, 10), QPoint(200, 100));
     QPainterPath path;
     path.addRoundedRect(f, 10, 10);
 
@@ -290,6 +303,7 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
     p.drawText(f.adjusted(5, 5, 0, 0), tr("天气: 晴\n风向: 东南"));
 //    p.drawText(f.adjusted(5, 25, 0, 0), tr("风向: 东南"));
     p.end();
+    painter->drawPixmap(10,10,transparentMap);
+    painter->end();
 
-    pixmapItem->setPixmap(pixmap2);
 }
