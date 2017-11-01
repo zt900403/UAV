@@ -40,6 +40,16 @@ private slots:
     void onCreateUAV(int id, int index, QString name);
     void onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status);
     void onCloseByClient(int id);
+    void on_addPathPushButton_clicked();
+
+    void on_delPathPushButton_clicked();
+
+    void on_addTagPushButton_clicked();
+
+    void on_delTagPushButton_clicked();
+
+    void on_tagTableWidget_cellClicked(int row, int column);
+
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
@@ -57,6 +67,8 @@ private:
     QMap<int, QWidget*> m_idTabMap;
     QPointF m_UAVGisPostion;
     UAVStatus m_currentStatus;
+    QVector<QPoint> m_path;
+    QMap<QString, QPoint> m_tags;
 };
 
 #endif // MAINWINDOW_H

@@ -71,6 +71,26 @@ void rOg_image::showContextMenu(const QPoint & pos)
     contextMenu.exec(globalPos);
 }
 
+QMap<QString, QPoint> rOg_image::tags() const
+{
+    return m_tags;
+}
+
+void rOg_image::setTags(const QMap<QString, QPoint> &tags)
+{
+    m_tags = tags;
+}
+
+QVector<QPoint> rOg_image::path() const
+{
+    return m_path;
+}
+
+void rOg_image::setPath(const QVector<QPoint> &path)
+{
+    m_path = path;
+}
+
 QPoint rOg_image::lastGisPosition() const
 {
     return m_lastGisPosition;
@@ -292,6 +312,25 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
         m_lastGisPosition = m_gisPosition;
     }
 
+    if (m_path.size() > 1) {
+        QPen pen(Qt::red, 4);
+        p.setPen(pen);
+        for (int i = 1; i < m_path.size(); ++i) {
+            p.drawLine(m_path[i-1], m_path[i]);
+        }
+    }
+
+    if (m_tags.size()) {
+        QPen pen(Qt::red, 2);
+        p.setPen(pen);
+        QMapIterator<QString, QPoint> it(m_tags);
+        while(it.hasNext()) {
+            it.next();
+            p.drawText(it.value() - QPoint(0, 5), it.key());
+            p.drawEllipse(it.value(), 3, 3);
+        }
+    }
+
     QMatrix leftmatrix;
     leftmatrix.rotate(m_yaw);
     QPixmap imageRot = m_uavPixmap.transformed(leftmatrix,Qt::SmoothTransformation);
@@ -329,6 +368,6 @@ void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
 //    p.drawText(f.adjusted(5, 25, 0, 0), tr("风向: 东南"));
     p.end();
     painter->drawPixmap(10,10,transparentMap);
-    painter->end();
+//    painter->end();
 
 }

@@ -10,6 +10,7 @@
 #include "net/uavtcpserver.h"
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QCheckBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateUavMetaDataGroup();
 
+    QRegExp portRegex("^([0-9]{1,6})$");
+    QRegExpValidator *portValidator = new QRegExpValidator(portRegex, this);
+    ui->pathXLineEdit->setValidator(portValidator);
+    ui->pathYLineEdit->setValidator(portValidator);
+    ui->tagXLineEdit->setValidator(portValidator);
+    ui->tagYLineEdit->setValidator(portValidator);
 }
 
 
@@ -298,3 +305,98 @@ void MainWindow::onCloseByClient(int id)
 }
 
 
+
+void MainWindow::on_addPathPushButton_clicked()
+{
+    QLineEdit *l1 = ui->pathXLineEdit;
+    QLineEdit *l2 = ui->pathYLineEdit;
+    QString x = l1->text();
+    QString y = l2->text();
+    if (!x.isEmpty() &&
+            !y.isEmpty()) {
+        QPoint p(x.toInt(), y.toInt());
+        m_path.append(p);
+
+        QTableWidget *t = ui->pathTableWidget;
+        int row = t->rowCount();
+        t->insertRow(row);
+        QTableWidgetItem *itemX = new QTableWidgetItem(x);
+        QTableWidgetItem *itemY = new QTableWidgetItem(y);
+        t->setItem(row, 0, itemX);
+        t->setItem(row, 1, itemY);
+
+        ui->gisView->setPath(m_path);
+        ui->gisView->update();
+    }
+}
+
+void MainWindow::on_delPathPushButton_clicked()
+{
+    QTableWidget *t = ui->pathTableWidget;
+    if (t->currentRow() != -1) {
+        qDebug() << t->currentRow();
+        qDebug() << m_path.size();
+        m_path.remove(t->currentRow());
+        t->removeRow(t->currentRow());
+        ui->gisView->setPath(m_path);
+        ui->gisView->update();
+        t->setCurrentCell(-1, -1);
+    }
+
+}
+
+void MainWindow::on_addTagPushButton_clicked()
+{
+    QTableWidget *t = ui->tagTableWidget;
+    QString name = ui->tagNameLineEdit->text();
+    QString x = ui->tagXLineEdit->text();
+    QString y = ui->tagYLineEdit->text();
+    if ( !name.isEmpty() && !x.isEmpty() && !y.isEmpty()) {
+        int row = t->rowCount();
+        t->insertRow(row);
+        QTableWidgetItem *checkBoxItem = new QTableWidgetItem(name);
+        checkBoxItem->setCheckState(Qt::Unchecked);
+        t->setItem(row, 0, checkBoxItem);
+
+        QTableWidgetItem *itemX = new QTableWidgetItem(x);
+        QTableWidgetItem *itemY = new QTableWidgetItem(y);
+        t->setItem(row, 1, itemX);
+        t->setItem(row, 2, itemY);
+//        m_tags[name] = QPoint(x.toInt(), y.toInt());
+    }
+}
+
+void MainWindow::on_delTagPushButton_clicked()
+{
+    QTableWidget *t = ui->tagTableWidget;
+    int row = t->currentRow();
+    if (row != -1) {
+        QTableWidgetItem *checkBoxItem = t->item(row, 0);
+        if (checkBoxItem->checkState()) {
+            QString name = t->item(row, 0)->data(Qt::DisplayRole).toString();
+            m_tags.remove(name);
+
+            ui->gisView->setTags(m_tags);
+            ui->gisView->update();
+        }
+        t->removeRow(row);
+        t->setCurrentCell(-1, -1);
+    }
+}
+
+void MainWindow::on_tagTableWidget_cellClicked(int row, int column)
+{
+    if (column == 0) {
+        QTableWidget * t = ui->tagTableWidget;
+        QTableWidgetItem *checkBoxItem = t->item(row, 0);
+        if (checkBoxItem->checkState()) {
+            QString name = checkBoxItem->data(Qt::DisplayRole).toString();
+            int x = t->item(row, 1)->data(Qt::DisplayRole).toInt();
+            int y = t->item(row, 2)->data(Qt::DisplayRole).toInt();
+            m_tags[name] = QPoint(x, y);
+
+            ui->gisView->setTags(m_tags);
+            ui->gisView->update();
+        }
+    }
+}

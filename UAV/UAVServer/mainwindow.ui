@@ -82,9 +82,93 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2,1">
+     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,6,1">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>标记点</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>X:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="tagXLineEdit"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Y:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="tagYLineEdit"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>名称:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="tagNameLineEdit"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="addTagPushButton">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="qavserver.qrc">
+                 <normaloff>:/images/icos/add.ico</normaloff>:/images/icos/add.ico</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="delTagPushButton">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="qavserver.qrc">
+                 <normaloff>:/images/icos/minus.ico</normaloff>:/images/icos/minus.ico</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tagTableWidget">
+             <column>
+              <property name="text">
+               <string>名称</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>X坐标</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Y坐标</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item>
          <widget class="QGroupBox" name="uavTypeDataGroup">
           <property name="title">
@@ -146,19 +230,6 @@
           </layout>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
       <item>
@@ -167,8 +238,70 @@
       <item>
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
-         <string>3</string>
+         <string>路径规划</string>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>X:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="pathXLineEdit"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Y:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="pathYLineEdit"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addPathPushButton">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="qavserver.qrc">
+               <normaloff>:/images/icos/add.ico</normaloff>:/images/icos/add.ico</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="delPathPushButton">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="qavserver.qrc">
+               <normaloff>:/images/icos/minus.ico</normaloff>:/images/icos/minus.ico</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="pathTableWidget">
+           <column>
+            <property name="text">
+             <string>X坐标</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Y坐标</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

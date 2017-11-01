@@ -83,6 +83,12 @@ public:
     QPoint lastGisPosition() const;
     void setLastGisPosition(const QPoint &lastGisPosition);
 
+    QVector<QPoint> path() const;
+    void setPath(const QVector<QPoint> &path);
+
+    QMap<QString, QPoint> tags() const;
+    void setTags(const QMap<QString, QPoint> &tags);
+
 public slots:
 
     /*!
@@ -202,6 +208,8 @@ private:
     QPixmap m_uavPixmap;
     QPoint m_lastGisPosition;
     bool m_drawLine;
+    QVector<QPoint> m_path;
+    QMap<QString, QPoint> m_tags;
 };
 
 #endif // rOg_image_H
