@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -351,6 +352,15 @@ void MainWindow::on_addTagPushButton_clicked()
     QString name = ui->tagNameLineEdit->text();
     QString x = ui->tagXLineEdit->text();
     QString y = ui->tagYLineEdit->text();
+    int rowCnt = t->rowCount();
+    for (int i = 0; i < rowCnt; ++i) {
+        QString tmp = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        if (tmp == name) {
+            QMessageBox::critical(this, "失败", "该名称已经存在!", QMessageBox::Ok);
+            return;
+        }
+    }
+
     if ( !name.isEmpty() && !x.isEmpty() && !y.isEmpty()) {
         int row = t->rowCount();
         t->insertRow(row);
@@ -395,8 +405,21 @@ void MainWindow::on_tagTableWidget_cellClicked(int row, int column)
             int y = t->item(row, 2)->data(Qt::DisplayRole).toInt();
             m_tags[name] = QPoint(x, y);
 
-            ui->gisView->setTags(m_tags);
-            ui->gisView->update();
+        } else {
+            QString name = checkBoxItem->data(Qt::DisplayRole).toString();
+            if (m_tags.contains(name)) {
+                m_tags.remove(name);
+            }
         }
+        ui->gisView->setTags(m_tags);
+        ui->gisView->update();
     }
+}
+
+void MainWindow::on_openMap_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "",
+                                                    tr("Images (*.png *.jpg)"));
+    ui->gisView->setImage(QImage(fileName));
 }

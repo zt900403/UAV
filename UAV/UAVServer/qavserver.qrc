@@ -8,5 +8,7 @@
         <file>images/icos/save.ico</file>
         <file>images/icos/arrow_left.ico</file>
         <file>images/icos/arrow_right.ico</file>
+        <file>images/icos/map.ico</file>
+        <file>images/icos/map48x48.ico</file>
     </qresource>
 </RCC>

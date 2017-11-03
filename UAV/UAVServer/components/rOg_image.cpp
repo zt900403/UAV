@@ -321,13 +321,25 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
     }
 
     if (m_tags.size()) {
-        QPen pen(Qt::red, 2);
+        QPen pen(Qt::red, 1);
         p.setPen(pen);
+        QFont f;
+        f.setPointSize(20);
+        p.setFont(f);
         QMapIterator<QString, QPoint> it(m_tags);
         while(it.hasNext()) {
             it.next();
-            p.drawText(it.value() - QPoint(0, 5), it.key());
-            p.drawEllipse(it.value(), 3, 3);
+            const qreal size = 32767.0;
+            QPointF corner(it.value().x(), it.value().y() - size);
+            corner.rx() -= size/2.0;
+            QRectF rect(corner.x(), corner.y(), size, size);
+            p.drawText(rect, Qt::AlignHCenter|Qt::AlignBottom, it.key());
+//            p.drawEllipse(it.value(), 1, 1);
+            int offset = 3;
+            p.drawLine(it.value() - QPoint(offset, offset),
+                       it.value() + QPoint(offset, offset));
+            p.drawLine(it.value() - QPoint(offset, -offset),
+                       it.value() + QPoint(offset, -offset));
         }
     }
 

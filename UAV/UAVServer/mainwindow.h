@@ -50,6 +50,8 @@ private slots:
 
     void on_tagTableWidget_cellClicked(int row, int column);
 
+    void on_openMap_triggered();
+
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
