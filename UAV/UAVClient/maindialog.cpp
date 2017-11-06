@@ -15,7 +15,8 @@ MainDialog::MainDialog(QWidget *parent) :
     m_nextBlockSize(0),
     m_frameNum(0),
     m_id(-1),
-    m_index(-1)
+    m_index(-1),
+    PI(3.1415926)
 {
     ui->setupUi(this);
 

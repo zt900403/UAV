@@ -312,9 +312,12 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 //        m_currentStatus = status;
 
         // 更新位置
-        QPointF velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
+        QPoint velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
                          -status.airSpeed()*cos(status.yaw() * 3.1415926 / 180));
-        m_idPositionMap[id] += velocity / 100;
+        QPoint tmp = m_idPositionMap[id];
+        tmp += velocity / 100;
+        m_idPositionMap[id] = tmp;
+//        m_idPositionMap[id] += velocity / 100;
 
 //        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
 //        ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());

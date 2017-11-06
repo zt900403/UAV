@@ -81,7 +81,7 @@ private:
     int m_id;
     int m_index;
     UAVStatus m_currentUAVstatus;
-    const float PI = 3.1415926;
+    const float PI;
 };
 
 #endif // MAINDIALOG_H

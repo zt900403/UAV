@@ -78,14 +78,14 @@ public:
     QMap<QString, QPoint> tags() const;
     void setTags(const QMap<QString, QPoint> &tags);
 
-    QMap<id, QPoint> idLocationMap() const;
-    void setIdLocationMap(const QMap<id, QPoint> &idLocationMap);
+    QMap<int, QPoint> idLocationMap() const;
+    void setIdLocationMap(const QMap<int, QPoint> &idLocationMap);
 
-    QMap<id, int> idYawMap() const;
-    void setIdYawMap(const QMap<id, int> &idYawMap);
+    QMap<int, int> idYawMap() const;
+    void setIdYawMap(const QMap<int, int> &idYawMap);
 
-    QMap<id, QPoint> idLastLocationMap() const;
-    void setIdLastLocationMap(const QMap<id, QPoint> &idLastLocationMap);
+    QMap<int, QPoint> idLastLocationMap() const;
+    void setIdLastLocationMap(const QMap<int, QPoint> &idLastLocationMap);
 
 public slots:
 
@@ -204,9 +204,9 @@ private:
 //    QPoint m_gisPosition;
 //    int m_yaw;
     QPixmap m_uavPixmap;
-    QMap<id, QPoint> m_idLastLocationMap;
-    QMap<id, QPoint> m_idLocationMap;
-    QMap<id, int> m_idYawMap;
+    QMap<int, QPoint> m_idLastLocationMap;
+    QMap<int, QPoint> m_idLocationMap;
+    QMap<int, int> m_idYawMap;
 //    QPoint m_lastGisPosition;
     bool m_drawLine;
     QVector<QPoint> m_path;
