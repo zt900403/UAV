@@ -288,11 +288,11 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
 {
     UAVStatus u;
     u.setIndex(index);
-    m_idOriginPositionMap[id] = QPoint(500, 500);
+//    m_idOriginPositionMap[id] = QPoint(500, 500);
     m_idPositionMap[id] = QPoint(500, 500);
     m_idYawMap[id] = 0;
     m_idUAVStatusMap[id] = u;
-    ui->gisView->setIdLastLocationMap(m_idOriginPositionMap);
+    ui->gisView->setIdLastLocationMap(m_idPositionMap);
     if (!m_idTabMap.contains(id))
         addUAVStatusTab(id, u);
 }

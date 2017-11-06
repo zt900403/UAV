@@ -284,7 +284,6 @@ QString rOg_image::setToolTipText(QPoint imageCoordinates)
     return QString("");
 }
 
-
 // Define the virtual function to avoid the "unused parameter" warning
 void rOg_image::drawOnImage(QPainter* painter , QSize )
 {
@@ -314,7 +313,7 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
 
     if (m_path.size() > 1) {
 
-        QPen pen(Qt::red, 4);
+        QPen pen(Qt::green, 4);
         p.setPen(pen);
         for (int i = 1; i < m_path.size(); ++i) {
             p.drawLine(m_path[i-1], m_path[i]);
