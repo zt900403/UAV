@@ -287,7 +287,8 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 //        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
         ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());
         ui->gisView->setYaw(m_currentStatus.yaw());
-        ui->gisView->update();
+//        ui->gisView->update();
+        ui->gisView->viewport()->repaint();
     }
 }
 
@@ -327,7 +328,8 @@ void MainWindow::on_addPathPushButton_clicked()
         t->setItem(row, 1, itemY);
 
         ui->gisView->setPath(m_path);
-        ui->gisView->update();
+//        ui->gisView->update();
+        ui->gisView->viewport()->repaint();
     }
 }
 
@@ -335,12 +337,11 @@ void MainWindow::on_delPathPushButton_clicked()
 {
     QTableWidget *t = ui->pathTableWidget;
     if (t->currentRow() != -1) {
-        qDebug() << t->currentRow();
-        qDebug() << m_path.size();
         m_path.remove(t->currentRow());
         t->removeRow(t->currentRow());
         ui->gisView->setPath(m_path);
-        ui->gisView->update();
+//        ui->gisView->update();
+        ui->gisView->viewport()->repaint();
         t->setCurrentCell(-1, -1);
     }
 
@@ -387,7 +388,8 @@ void MainWindow::on_delTagPushButton_clicked()
             m_tags.remove(name);
 
             ui->gisView->setTags(m_tags);
-            ui->gisView->update();
+//            ui->gisView->update();
+            ui->gisView->viewport()->repaint();
         }
         t->removeRow(row);
         t->setCurrentCell(-1, -1);
@@ -412,7 +414,8 @@ void MainWindow::on_tagTableWidget_cellClicked(int row, int column)
             }
         }
         ui->gisView->setTags(m_tags);
-        ui->gisView->update();
+//        ui->gisView->update();
+        ui->gisView->viewport()->repaint();
     }
 }
 
@@ -421,5 +424,6 @@ void MainWindow::on_openMap_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "",
                                                     tr("Images (*.png *.jpg)"));
-    ui->gisView->setImage(QImage(fileName));
+    if (!fileName.isEmpty())
+        ui->gisView->setImage(QImage(fileName));
 }

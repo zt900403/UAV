@@ -289,6 +289,7 @@ QString rOg_image::setToolTipText(QPoint imageCoordinates)
 // Define the virtual function to avoid the "unused parameter" warning
 void rOg_image::drawOnImage(QPainter* painter , QSize )
 {
+
     QBrush b(Qt::white);
     painter->setBrush(b);
     QPixmap pixmap2 = pixmap;
@@ -305,14 +306,8 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
 
     QPainter p(&pixmap2);
 
-    if (m_drawLine) {
-        QPen pen(Qt::red);
-        p.setPen(pen);
-        p.drawLine(m_lastGisPosition, m_gisPosition);
-        m_lastGisPosition = m_gisPosition;
-    }
-
     if (m_path.size() > 1) {
+
         QPen pen(Qt::red, 4);
         p.setPen(pen);
         for (int i = 1; i < m_path.size(); ++i) {
@@ -334,7 +329,6 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
             corner.rx() -= size/2.0;
             QRectF rect(corner.x(), corner.y(), size, size);
             p.drawText(rect, Qt::AlignHCenter|Qt::AlignBottom, it.key());
-//            p.drawEllipse(it.value(), 1, 1);
             int offset = 3;
             p.drawLine(it.value() - QPoint(offset, offset),
                        it.value() + QPoint(offset, offset));
@@ -343,15 +337,33 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
         }
     }
 
+
     QMatrix leftmatrix;
     leftmatrix.rotate(m_yaw);
     QPixmap imageRot = m_uavPixmap.transformed(leftmatrix,Qt::SmoothTransformation);
 
     p.drawPixmap(m_gisPosition.x()-imageRot.width()/2,m_gisPosition.y()-imageRot.height()/2,imageRot );
+
+    QPainterPath path;
+    QPolygon polygon;
+    polygon.append(QPoint(600, 600));
+    polygon.append(QPoint(680, 680));
+    polygon.append(QPoint(688, 799));
+    polygon.append(QPoint(654, 880));
+    path.addPolygon(polygon);
+
+    QPen pen;
+    p.setPen(pen);
+    p.setOpacity(0.1);
+    //p.drawRect(f);
+    p.fillPath(path, Qt::green);
+    p.drawPath(path);
+
     p.end();
 
-    pixmapItem->setPixmap(pixmap2);
 
+    painter->drawPixmap(0, 0, pixmap2);
+//    pixmapItem->setPixmap(pixmap2);
 }
 
 

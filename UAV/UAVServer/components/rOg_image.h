@@ -210,6 +210,7 @@ private:
     bool m_drawLine;
     QVector<QPoint> m_path;
     QMap<QString, QPoint> m_tags;
+//    int i;
 };
 
 #endif // rOg_image_H
