@@ -72,22 +72,20 @@ public:
      */
     void                    setZoomCtrlFactor(const double factor) {zoomCtrlFactor=factor; }
 
-
-
-    QPoint gisPosition() const;
-    void setGisPosition(const QPoint &gisPosition);
-
-    int yaw() const;
-    void setYaw(int yaw);
-
-    QPoint lastGisPosition() const;
-    void setLastGisPosition(const QPoint &lastGisPosition);
-
     QVector<QPoint> path() const;
     void setPath(const QVector<QPoint> &path);
 
     QMap<QString, QPoint> tags() const;
     void setTags(const QMap<QString, QPoint> &tags);
+
+    QMap<id, QPoint> idLocationMap() const;
+    void setIdLocationMap(const QMap<id, QPoint> &idLocationMap);
+
+    QMap<id, int> idYawMap() const;
+    void setIdYawMap(const QMap<id, int> &idYawMap);
+
+    QMap<id, QPoint> idLastLocationMap() const;
+    void setIdLastLocationMap(const QMap<id, QPoint> &idLastLocationMap);
 
 public slots:
 
@@ -203,10 +201,13 @@ private:
 
 //    QVector<QPoint> pathVector;
 
-    QPoint m_gisPosition;
-    int m_yaw;
+//    QPoint m_gisPosition;
+//    int m_yaw;
     QPixmap m_uavPixmap;
-    QPoint m_lastGisPosition;
+    QMap<id, QPoint> m_idLastLocationMap;
+    QMap<id, QPoint> m_idLocationMap;
+    QMap<id, int> m_idYawMap;
+//    QPoint m_lastGisPosition;
     bool m_drawLine;
     QVector<QPoint> m_path;
     QMap<QString, QPoint> m_tags;

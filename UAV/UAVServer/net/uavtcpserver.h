@@ -5,6 +5,7 @@
 #include <QVector>
 #include "object/uav.h"
 #include "object/weapon.h"
+#include "object/detectiondevice.h"
 class UAVTcpServer : public QTcpServer
 {
     Q_OBJECT
@@ -17,13 +18,17 @@ public:
     QVector<Weapon> weapons() const;
     void setWeapons(const QVector<Weapon> &weapons);
 
+    QVector<DetectionDevice> detections() const;
+    void setDetections(const QVector<DetectionDevice> &detections);
+
 private:
     void incomingConnection(int socketId);
 private:
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    QVector<DetectionDevice> m_detections;
     int m_id;
-    QMap<QString, int> m_ipIdMap;
+//    QMap<QString, int> m_ipIdMap;
     QObject *m_parent;
 };
 

@@ -15,7 +15,6 @@ public:
               float altitude = 0.0f,
               float flyEnduranceHour = 0.0f,
               float flyEnduranceKM = 0.0f,
-
               int index = -1,
               const QTime &time = QTime(),
               const QMap<QString, int> &weapon = QMap<QString, int>());

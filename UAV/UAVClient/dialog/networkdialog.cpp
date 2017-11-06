@@ -82,7 +82,7 @@ void NetworkDialog::updateUAVWidgets()
         QString responseType;
         in >> responseType;
         if (responseType == "R0") {
-            in >> m_uavs >> m_weapons;
+            in >> m_uavs >> m_weapons >> m_detections;
             QVectorIterator<UAV> i(m_uavs);
             while(i.hasNext()) {
                 UAV u = i.next();

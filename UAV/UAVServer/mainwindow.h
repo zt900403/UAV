@@ -5,6 +5,7 @@
 #include <object/uav.h>
 #include <object/weapon.h>
 #include <object/uavstatus.h>
+#include <object/detectiondevice.h>
 #include "utils/json.h"
 #include <QVector>
 
@@ -57,6 +58,7 @@ private:
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
     void instantiateUAVs(const QtJson::JsonArray &uavs);
     void instantiateWeapons(const QtJson::JsonArray &weapons);
+    void instantiateDetections(const QtJson::JsonArray &detections);
     void listenServer();
     void addUAVStatusTab(int id, const UAVStatus &status);
 
@@ -64,11 +66,16 @@ private:
     Ui::MainWindow *ui;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    QVector<DetectionDevice> m_detections;
+
     UAVTcpServer *m_tcpserver;
     QMap<int, UAVStatus> m_idUAVStatusMap;
+    QMap<int, QPoint> m_idOriginPositionMap;
+    QMap<int, QPoint> m_idPositionMap;
+    QMap<int, int> m_idYawMap;
     QMap<int, QWidget*> m_idTabMap;
-    QPointF m_UAVGisPostion;
-    UAVStatus m_currentStatus;
+//    QPointF m_UAVGisPostion;
+//    UAVStatus m_currentStatus;
     QVector<QPoint> m_path;
     QMap<QString, QPoint> m_tags;
 };

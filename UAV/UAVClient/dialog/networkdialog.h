@@ -6,6 +6,7 @@
 #include <QVector>
 #include "object/uav.h"
 #include "object/weapon.h"
+#include "object/detectiondevice.h"
 class QListWidgetItem;
 namespace Ui {
 class NetworkDialog;
@@ -65,6 +66,7 @@ private:
     qint64 m_nextBlockSize;
     QVector<UAV> m_uavs;
     QVector<Weapon> m_weapons;
+    QVector<DetectionDevice> m_detections;
     QString m_ip;
     int m_port;
     QPair<int, QString> m_selected;

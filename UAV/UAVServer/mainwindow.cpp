@@ -22,12 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
     QImage image(imageDir);
 
-    ui->gisView->setLastGisPosition(QPoint(500,500));
-    ui->gisView->setGisPosition(QPoint(500, 500));
-    m_UAVGisPostion.setX(500);
-    m_UAVGisPostion.setY(500);
+//    ui->gisView->setLastGisPosition(QPoint(500,500));
+//    ui->gisView->setGisPosition(QPoint(500, 500));
+//    m_UAVGisPostion.setX(500);
+//    m_UAVGisPostion.setY(500);
 
-    ui->gisView->setYaw(-46);
+//    ui->gisView->setYaw(-46);
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
     ui->gisView->update();
@@ -88,6 +88,9 @@ bool MainWindow::updateUavMetaDataGroup()
     QtJson::JsonArray weapons = result["weapons"].toList();
     instantiateWeapons(weapons);
 
+    QtJson::JsonArray detections = result["detectionEquipments"].toList();
+    instantiateDetections(detections);
+
     listenServer();
     return true;
 }
@@ -126,7 +129,15 @@ void MainWindow::instantiateUAVs(const QtJson::JsonArray &uavs)
             QtJson::JsonObject w = wn.toMap();
             weapon[w["name"].toString()] = w["amount"].toInt();
         }
-        UAV u(name, descStr, p, acc, fh, fe, lw, ms, v, w, weapon);
+
+        QVector<QString> detection;
+        QtJson::JsonArray detections = obj["detectionEquipments"].toList();
+        foreach(QVariant det, detections) {
+
+            detection.append(det.toMap()["name"].toString());
+        }
+
+        UAV u(name, descStr, p, acc, fh, fe, lw, ms, v, w, weapon, detection);
         m_uavs.append(u);
     }
 }
@@ -149,6 +160,23 @@ void MainWindow::instantiateWeapons(const QtJson::JsonArray &weapons)
     }
 }
 
+void MainWindow::instantiateDetections(const QtJson::JsonArray &detections)
+{
+    foreach(QVariant var, detections) {
+        QtJson::JsonObject obj = var.toMap();
+        QString n = obj["name"].toString();
+        QString r = obj["resolution"].toString();
+        QString wh = obj["workingAltitude"].toString();
+        float w = obj["weight"].toFloat();
+        QString fd = obj["focalDistance"].toString();
+        QString v = obj["volume"].toString();
+        QString p = obj["power"].toString();
+
+        DetectionDevice d(n, r, wh, w, fd, v, p);
+        m_detections.append(d);
+    }
+}
+
 void MainWindow::listenServer()
 {
     if (!m_tcpserver) {
@@ -159,6 +187,7 @@ void MainWindow::listenServer()
 
     m_tcpserver->setUavs(m_uavs);
     m_tcpserver->setWeapons(m_weapons);
+    m_tcpserver->setDetections(m_detections);
 
     if (!m_tcpserver->listen(QHostAddress::Any, 10666)) {
         QMessageBox::critical(this, tr("错误"), tr("端口监听失败, 请确定其他程序没有使用10666端口!"),
@@ -259,7 +288,11 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
 {
     UAVStatus u;
     u.setIndex(index);
+    m_idOriginPositionMap[id] = QPoint(500, 500);
+    m_idPositionMap[id] = QPoint(500, 500);
+    m_idYawMap[id] = 0;
     m_idUAVStatusMap[id] = u;
+    ui->gisView->setIdLastLocationMap(m_idOriginPositionMap);
     if (!m_idTabMap.contains(id))
         addUAVStatusTab(id, u);
 }
@@ -276,18 +309,20 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
         w->findChild<QLineEdit*>("acc")->setText(QString::number(status.accelerator()));
         w->findChild<QLineEdit*>("airSpeed")->setText(QString::number(status.airSpeed()));
         w->findChild<QLineEdit*>("altitude")->setText(QString::number(status.altitude()));
-        m_currentStatus = status;
-
+//        m_currentStatus = status;
 
         // 更新位置
-        QPointF velocity(m_currentStatus.airSpeed()*sin(m_currentStatus.yaw() * 3.1415926 / 180),
-                         -m_currentStatus.airSpeed()*cos(m_currentStatus.yaw() * 3.1415926 / 180));
-        m_UAVGisPostion += velocity / 100;
+        QPointF velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
+                         -status.airSpeed()*cos(status.yaw() * 3.1415926 / 180));
+        m_idPositionMap[id] += velocity / 100;
 
 //        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
-        ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());
-        ui->gisView->setYaw(m_currentStatus.yaw());
+//        ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());
+//        ui->gisView->setYaw(m_currentStatus.yaw());
 //        ui->gisView->update();
+        m_idYawMap[id] = status.yaw();
+        ui->gisView->setIdLocationMap(m_idPositionMap);
+        ui->gisView->setIdYawMap(m_idYawMap);
         ui->gisView->viewport()->repaint();
     }
 }

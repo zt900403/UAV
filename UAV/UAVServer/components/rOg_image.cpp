@@ -71,6 +71,36 @@ void rOg_image::showContextMenu(const QPoint & pos)
     contextMenu.exec(globalPos);
 }
 
+QMap<id, QPoint> rOg_image::idLastLocationMap() const
+{
+    return m_idLastLocationMap;
+}
+
+void rOg_image::setIdLastLocationMap(const QMap<id, QPoint> &idLastLocationMap)
+{
+    m_idLastLocationMap = idLastLocationMap;
+}
+
+QMap<id, int> rOg_image::idYawMap() const
+{
+    return m_idYawMap;
+}
+
+void rOg_image::setIdYawMap(const QMap<id, int> &idYawMap)
+{
+    m_idYawMap = idYawMap;
+}
+
+QMap<id, QPoint> rOg_image::idLocationMap() const
+{
+    return m_idLocationMap;
+}
+
+void rOg_image::setIdLocationMap(const QMap<id, QPoint> &idLocationMap)
+{
+    m_idLocationMap = idLocationMap;
+}
+
 QMap<QString, QPoint> rOg_image::tags() const
 {
     return m_tags;
@@ -90,37 +120,6 @@ void rOg_image::setPath(const QVector<QPoint> &path)
 {
     m_path = path;
 }
-
-QPoint rOg_image::lastGisPosition() const
-{
-    return m_lastGisPosition;
-}
-
-void rOg_image::setLastGisPosition(const QPoint &lastGisPosition)
-{
-    m_lastGisPosition = lastGisPosition;
-}
-
-int rOg_image::yaw() const
-{
-    return m_yaw;
-}
-
-void rOg_image::setYaw(int yaw)
-{
-    m_yaw = yaw;
-}
-
-QPoint rOg_image::gisPosition() const
-{
-    return m_gisPosition;
-}
-
-void rOg_image::setGisPosition(const QPoint &gisPosition)
-{
-    m_gisPosition = gisPosition;
-}
-
 
 
 
@@ -299,8 +298,12 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
         QPen pen(Qt::red, 4);
         pLine.setPen(pen);
 
-        pLine.drawLine(m_lastGisPosition, m_gisPosition);
-        m_lastGisPosition = m_gisPosition;
+        if (m_idLastLocationMap.size() == m_idLocationMap.size()) {
+            for(int i = 0; i < m_idLocationMap.size(); ++i) {
+                pLine.drawLine(m_idLocationMap[i], m_idLastLocationMap[i]);
+                m_idLastLocationMap[i] = m_idLocationMap[i];
+            }
+        }
     }
     pLine.end();
 
@@ -338,11 +341,15 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
     }
 
 
-    QMatrix leftmatrix;
-    leftmatrix.rotate(m_yaw);
-    QPixmap imageRot = m_uavPixmap.transformed(leftmatrix,Qt::SmoothTransformation);
+    for(int i = 0; i < m_idYawMap.size(); ++i) {
+        QMatrix leftmatrix;
+        leftmatrix.rotate(m_idYawMap[i]);
+        QPixmap imageRot = m_uavPixmap.transformed(leftmatrix,Qt::SmoothTransformation);
+        p.drawPixmap(m_idLocationMap.x()-imageRot.width()/2,
+                     m_idLocationMap.y()-imageRot.height()/2,
+                     imageRot );
 
-    p.drawPixmap(m_gisPosition.x()-imageRot.width()/2,m_gisPosition.y()-imageRot.height()/2,imageRot );
+    }
 
     QPainterPath path;
     QPolygon polygon;

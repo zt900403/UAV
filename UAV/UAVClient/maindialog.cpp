@@ -25,7 +25,7 @@ MainDialog::MainDialog(QWidget *parent) :
 //    timer->start(1000);
     ui->weapenTreeWidget->setCurrentIndex(QModelIndex());
 
-    m_timerId = startTimer(1000 / 30);
+    m_timerId = startTimer(1000 / 10);
     m_time.start();
 
     ui->cameraButton->setButtonStyle(SwitchButton::ButtonStyle_CircleIn);
@@ -252,11 +252,15 @@ void MainDialog::sendUAVStatus(const UAVStatus &status)
 
 void MainDialog::sendCloseSign()
 {
-//    QDataStream out(&m_tcpSocket);
-//    out << qint64(0xFFFFFFFF);
-    QDataStream out(&m_tcpSocket);
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_8);
-    out << qint64(0xFFFFFFFF);
+    out << qint64(0)
+        << QString("P3")
+        << quint8(m_id);
+    out.device()->seek(0);
+    out << qint64(block.size() - sizeof(qint64));
+    m_tcpSocket.write(block);
     m_tcpSocket.flush();
 }
 

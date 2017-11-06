@@ -16,7 +16,8 @@ public:
         float maxSpeed = 0.0f,
         float voyage = 0.0f,
         float weight = 0.0f,
-        const QMap<QString, int> weapon = QMap<QString, int>());
+        const QMap<QString, int> &weapon = QMap<QString, int>(),
+        const QVector<QString> &detection = QVector<QString>());
 
     float acceleration() const;
     void setAcceleration(float acceleration);
@@ -50,6 +51,9 @@ public:
 
     QPixmap pixmap() const;
     void setPixmap(const QPixmap &pixmap);
+    QVector<QString> detection() const;
+    void setDetection(const QVector<QString> &detection);
+
 private:
     float m_acceleration;
     QString m_description;
@@ -62,6 +66,7 @@ private:
     float m_voyage;
     float m_weight;
     QMap<QString, int> m_weapon;
+    QVector<QString> m_detection;
 };
 
 QDataStream &operator<<(QDataStream &out, const UAV &uav);
