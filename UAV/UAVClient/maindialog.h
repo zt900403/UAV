@@ -43,7 +43,8 @@ private slots:
     void onRollAndPitch(float roll, float pitch);
     void on_fireButton_clicked();
     void on_yawSlider_valueChanged(int value);
-
+    void onCameraBtnChanged(bool checked);
+    void onRadarBtnChanged(bool checked);
 protected:
     void timerEvent(QTimerEvent *event);
 

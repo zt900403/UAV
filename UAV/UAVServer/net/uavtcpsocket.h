@@ -22,6 +22,7 @@ signals:
     void createUAV(int id, int index, QString name);
     void updateUAVStatus(int id, qint64 frameNum, UAVStatus status);
     void closeByClient(int id);
+    void detectionDeviceStatusChanged(int id, QString deviceName, bool checked);
 private slots:
     void readClient();
 

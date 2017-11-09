@@ -41,6 +41,7 @@ private slots:
     void onCreateUAV(int id, int index, QString name);
     void onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status);
     void onCloseByClient(int id);
+    void onDetectionDeviceStatusChanged(int id, QString deviceName, bool checked);
     void on_addPathPushButton_clicked();
 
     void on_delPathPushButton_clicked();

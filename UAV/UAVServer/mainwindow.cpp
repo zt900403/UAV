@@ -344,6 +344,11 @@ void MainWindow::onCloseByClient(int id)
     }
 }
 
+void MainWindow::onDetectionDeviceStatusChanged(int id, QString deviceName, bool checked)
+{
+    qDebug() << id << deviceName << checked;
+}
+
 
 
 void MainWindow::on_addPathPushButton_clicked()

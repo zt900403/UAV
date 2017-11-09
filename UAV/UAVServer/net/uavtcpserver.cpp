@@ -21,6 +21,7 @@ void UAVTcpServer::incomingConnection(int socketId)
     connect(socket, SIGNAL(createUAV(int,int,QString)), m_parent, SLOT(onCreateUAV(int, int, QString)));
     connect(socket, SIGNAL(updateUAVStatus(int,qint64,UAVStatus)), m_parent, SLOT(onUpdateUAVStatus(int, qint64, UAVStatus)));
     connect(socket, SIGNAL(closeByClient(int)), m_parent, SLOT(onCloseByClient(int)));
+    connect(socket, SIGNAL(detectionDeviceStatusChanged(int,QString,bool)), m_parent, SLOT(onDetectionDeviceStatusChanged(int,QString,bool)));
 }
 
 QVector<DetectionDevice> UAVTcpServer::detections() const

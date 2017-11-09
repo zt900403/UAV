@@ -71,6 +71,13 @@ void UAVTcpSocket::readClient()
             emit closeByClient(id);
             close();
         }
+        if (requestType == "P4") {
+            quint8 id;
+            QString desc;
+            bool checked;
+            in >> id >> desc >> checked;
+            emit detectionDeviceStatusChanged(id, desc, checked);
+        }
         m_nextBlockSize = 0;
     }
 

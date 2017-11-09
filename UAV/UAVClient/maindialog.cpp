@@ -60,7 +60,8 @@ MainDialog::MainDialog(QWidget *parent) :
     connect(&m_tcpSocket, SIGNAL(disconnected()), this, SLOT(onConnectionClosed()));
     connect(&m_tcpSocket, SIGNAL(readyRead()), this, SLOT(updateWidgets()));
     connect(&m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
-
+    connect(ui->cameraButton, SIGNAL(checkedChanged(bool)), this, SLOT(onCameraBtnChanged(bool)));
+    connect(ui->radarButton, SIGNAL(checkedChanged(bool)), this, SLOT(onRadarBtnChanged(bool)));
 }
 
 MainDialog::~MainDialog()
@@ -384,5 +385,41 @@ void MainDialog::on_yawSlider_valueChanged(int value)
     ui->widgetPFD->setHeading(value);
     ui->widgetPFD->update();
     ui->yawEdit->setText(QString::number(value));
+}
+
+void MainDialog::onCameraBtnChanged(bool checked)
+{
+    if (m_tcpSocket.isOpen()) {
+        QByteArray block;
+        QDataStream out(&block, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_4_8);
+        out << qint64(0)
+            << QString("P4")
+            << quint8(m_id)
+            << QString("相机")
+            << checked;
+        out.device()->seek(0);
+        out << qint64(block.size() - sizeof(qint64));
+        m_tcpSocket.write(block);
+        m_tcpSocket.flush();
+    }
+}
+
+void MainDialog::onRadarBtnChanged(bool checked)
+{
+    if (m_tcpSocket.isOpen()) {
+        QByteArray block;
+        QDataStream out(&block, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_4_8);
+        out << qint64(0)
+            << QString("P4")
+            << quint8(m_id)
+            << QString("雷达")
+            << checked;
+        out.device()->seek(0);
+        out << qint64(block.size() - sizeof(qint64));
+        m_tcpSocket.write(block);
+        m_tcpSocket.flush();
+    }
 }
 
