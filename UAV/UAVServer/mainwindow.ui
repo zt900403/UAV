@@ -92,6 +92,24 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QPushButton" name="exportTagsBtn">
+               <property name="text">
+                <string>导出数据</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="importTagsBtn">
+               <property name="text">
+                <string>导入数据</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
               <widget class="QLabel" name="label_3">
@@ -184,17 +202,6 @@
 	border: none;
 	background-color: transparent;
 }</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="changeUAVTypeBtn">
-               <property name="text">
-                <string>更改参数</string>
-               </property>
-               <property name="icon">
-                <iconset resource="qavserver.qrc">
-                 <normaloff>:/images/icos/Gear.ico</normaloff>:/images/icos/Gear.ico</iconset>
                </property>
               </widget>
              </item>
@@ -342,9 +349,11 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="openMap"/>
+   <addaction name="uavParameter"/>
+   <addaction name="weatherBtn"/>
   </widget>
   <action name="openMap">
    <property name="icon">
@@ -353,6 +362,30 @@
    </property>
    <property name="text">
     <string>打开地图</string>
+   </property>
+  </action>
+  <action name="uavParameter">
+   <property name="icon">
+    <iconset resource="qavserver.qrc">
+     <normaloff>:/images/icos/uavBtn.ico</normaloff>:/images/icos/uavBtn.ico</iconset>
+   </property>
+   <property name="text">
+    <string>无人机参数</string>
+   </property>
+   <property name="toolTip">
+    <string>修改无人机参数</string>
+   </property>
+  </action>
+  <action name="weatherBtn">
+   <property name="icon">
+    <iconset resource="qavserver.qrc">
+     <normaloff>:/images/icos/weather.ico</normaloff>:/images/icos/weather.ico</iconset>
+   </property>
+   <property name="text">
+    <string>天气要素</string>
+   </property>
+   <property name="toolTip">
+    <string>更改天气要素</string>
    </property>
   </action>
  </widget>

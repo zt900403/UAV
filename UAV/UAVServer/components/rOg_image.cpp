@@ -8,6 +8,7 @@
 rOg_image::rOg_image(QWidget * parent, bool isContextualMenu)
     : QGraphicsView(parent)
     , m_drawLine(true)
+    , m_isShowWeather(false)
 {
     // Set default zoom factors
     zoomFactor=DEFAULT_ZOOM_FACTOR;
@@ -69,6 +70,13 @@ void rOg_image::showContextMenu(const QPoint & pos)
     contextMenu.addAction("重置画面", this, SLOT(fitImage()));
     // Display the menu
     contextMenu.exec(globalPos);
+}
+
+void rOg_image::setWeahter(const QString &str, bool checked)
+{
+    m_weather = str;
+    m_isShowWeather = checked;
+    this->update();
 }
 
 QMap<int, QPoint> rOg_image::idLastLocationMap() const
@@ -382,27 +390,40 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
 // Define the virtual function to avoid the "unused parameter" warning
 void rOg_image::drawInViewPort(QPainter* painter, QSize portSize)
 {
-    QBrush b(Qt::white);
-    QPixmap transparentMap(300,300);
-    transparentMap.fill(Qt::transparent);
-    QPainter p(&transparentMap);
+    if (m_isShowWeather) {
 
-    p.setRenderHint(QPainter::Antialiasing);
-    p.setBrush(b);
-    QRectF f(QPoint(10, 10), QPoint(150, 80));
-    QPainterPath path;
-    path.addRoundedRect(f, 10, 10);
+        QBrush b(Qt::white);
+        QPixmap transparentMap(600,600);
+        transparentMap.fill(Qt::transparent);
+        QPainter p(&transparentMap);
 
-    p.setOpacity(0.5);
-    //p.drawRect(f);
-    p.fillPath(path, Qt::white);
-    p.drawPath(path);
-    QFont font( "Microsoft YaHei", 15, 75);
-    p.setFont(font);
-    p.drawText(f.adjusted(5, 5, 0, 0), tr("天气: 晴\n风向: 东南"));
-//    p.drawText(f.adjusted(5, 25, 0, 0), tr("风向: 东南"));
-    p.end();
-    painter->drawPixmap(10,10,transparentMap);
-//    painter->end();
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setBrush(b);
+        int lineCnt = m_weather.count(QLatin1Char('\n')) + 1;
+        QStringList l = m_weather.split("\n");
+        int maxLength = 0;
+
+        foreach (QString val, l) {
+           if (val.size() > maxLength)
+               maxLength = val.size();
+        }
+
+        QRectF f(QPoint(10, 10), QPoint(maxLength * 25, lineCnt * 35));
+        QPainterPath path;
+        path.addRoundedRect(f, 10, 10);
+
+        p.setOpacity(0.5);
+        //p.drawRect(f);
+        p.fillPath(path, Qt::white);
+        p.drawPath(path);
+        QFont font( "Microsoft YaHei", 15, 75);
+
+        p.setFont(font);
+        p.drawText(f.adjusted(5, 5, 0, 0), m_weather);
+        //    p.drawText(f.adjusted(5, 25, 0, 0), tr("风向: 东南"));
+        p.end();
+        painter->drawPixmap(10,10,transparentMap);
+        //    painter->end();
+    }
 
 }

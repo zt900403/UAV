@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog/uavtypedatadialog.h"
+#include "dialog/weatherdialog.h"
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
@@ -16,7 +17,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_tcpserver(NULL)
+    m_tcpserver(NULL),
+    m_isShowWeather(false)
 {
     ui->setupUi(this);
     QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
@@ -40,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pathYLineEdit->setValidator(portValidator);
     ui->tagXLineEdit->setValidator(portValidator);
     ui->tagYLineEdit->setValidator(portValidator);
+
+    ui->statusbar->showMessage("无人机连接数量0.");
 }
 
 
@@ -265,6 +269,13 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     ui->uavStatusTabWidget->addTab(widget, title);
 }
 
+void MainWindow::setWeather(const QString &str, bool checked)
+{
+    ui->gisView->setWeahter(str, checked);
+    m_weatherInfo = str;
+    m_isShowWeather = checked;
+}
+
 
 void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
 {
@@ -273,15 +284,6 @@ void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
 
     ui->uavDescriptionLabel->setText(d.toString());
     labelDisplayImage(ui->uavImageLabel, i.value<QPixmap>());
-}
-
-void MainWindow::on_changeUAVTypeBtn_clicked()
-{
-    UAVTypeDataDialog d(this);
-    int result = d.exec();
-    if (result == QDialog::Accepted) {
-        updateUavMetaDataGroup();
-    }
 }
 
 void MainWindow::onCreateUAV(int id, int index, QString name)
@@ -295,6 +297,8 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     ui->gisView->setIdLastLocationMap(m_idPositionMap);
     if (!m_idTabMap.contains(id))
         addUAVStatusTab(id, u);
+    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
+    ui->statusbar->showMessage(str);
 }
 
 void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
@@ -342,6 +346,8 @@ void MainWindow::onCloseByClient(int id)
             break;
         }
     }
+    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
+    ui->statusbar->showMessage(str);
 }
 
 void MainWindow::onDetectionDeviceStatusChanged(int id, QString deviceName, bool checked)
@@ -469,4 +475,51 @@ void MainWindow::on_openMap_triggered()
                                                     tr("Images (*.png *.jpg)"));
     if (!fileName.isEmpty())
         ui->gisView->setImage(QImage(fileName));
+}
+
+void MainWindow::on_uavParameter_triggered()
+{
+    UAVTypeDataDialog d(this);
+    int result = d.exec();
+    if (result == QDialog::Accepted) {
+        updateUavMetaDataGroup();
+    }
+}
+
+void MainWindow::on_weatherBtn_triggered()
+{
+    WeatherDialog d(m_weatherInfo, m_isShowWeather, this);
+    int result = d.exec();
+    if (result == QDialog::Accepted) {
+    }
+}
+
+void MainWindow::on_importTagsBtn_clicked()
+{
+
+}
+
+void MainWindow::on_exportTagsBtn_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("保存文件"),
+                               "",
+                               tr("文本文件 (*.txt)"));
+
+    if (QFile::exists(filename))
+    {
+        QFile::remove(filename);
+    }
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << "%名称 x坐标 y坐标%" << "\n";
+        QMapIterator<QString,QPoint> it(m_tags);
+        while(it.hasNext()) {
+            it.next();
+            stream << it.key() << " " << it.value().x() << " " << it.value().y() << "\n";
+        }
+        file.flush();
+        file.close();
+        QMessageBox::information(this, "成功", "保存完成!", QMessageBox::Ok);
+    }
 }

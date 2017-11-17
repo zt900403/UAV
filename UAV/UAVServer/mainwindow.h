@@ -37,7 +37,6 @@ private slots:
 
     void on_uavslistWidget_itemClicked(QListWidgetItem *item);
 
-    void on_changeUAVTypeBtn_clicked();
     void onCreateUAV(int id, int index, QString name);
     void onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status);
     void onCloseByClient(int id);
@@ -54,6 +53,14 @@ private slots:
 
     void on_openMap_triggered();
 
+    void on_uavParameter_triggered();
+
+    void on_weatherBtn_triggered();
+
+    void on_importTagsBtn_clicked();
+
+    void on_exportTagsBtn_clicked();
+
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
@@ -62,6 +69,9 @@ private:
     void instantiateDetections(const QtJson::JsonArray &detections);
     void listenServer();
     void addUAVStatusTab(int id, const UAVStatus &status);
+public:
+
+    void setWeather(const QString &str, bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -79,6 +89,8 @@ private:
 //    UAVStatus m_currentStatus;
     QVector<QPoint> m_path;
     QMap<QString, QPoint> m_tags;
+    QString m_weatherInfo;
+    bool m_isShowWeather;
 };
 
 #endif // MAINWINDOW_H

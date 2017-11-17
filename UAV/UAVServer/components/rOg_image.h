@@ -179,6 +179,8 @@ protected slots:
     virtual void            showContextMenu(const QPoint & pos);
 
 
+public:
+    void setWeahter(const QString &str, bool checked);
 private:
 
     // Scene where the image is drawn
@@ -212,6 +214,8 @@ private:
     QVector<QPoint> m_path;
     QMap<QString, QPoint> m_tags;
 //    int i;
+    QString m_weather;
+    bool m_isShowWeather;
 };
 
 #endif // rOg_image_H

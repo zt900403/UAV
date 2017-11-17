@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     net/uavtcpserver.cpp \
     net/uavtcpsocket.cpp \
     object/uavstatus.cpp \
-    object/detectiondevice.cpp
+    object/detectiondevice.cpp \
+    dialog/weatherdialog.cpp
 
 HEADERS  += \
     components/rOg_image.h \
@@ -36,11 +37,13 @@ HEADERS  += \
     net/uavtcpserver.h \
     net/uavtcpsocket.h \
     object/uavstatus.h \
-    object/detectiondevice.h
+    object/detectiondevice.h \
+    dialog/weatherdialog.h
 
 FORMS    += \
     mainwindow.ui \
-    dialog/uavtypedatadialog.ui
+    dialog/uavtypedatadialog.ui \
+    dialog/weatherdialog.ui
 
 DISTFILES += \
     config/uvatype.json

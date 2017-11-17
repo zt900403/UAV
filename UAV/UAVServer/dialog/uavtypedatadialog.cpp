@@ -244,6 +244,25 @@ void UAVTypeDataDialog::saveFile(const QString &filename)
 
 }
 
+bool UAVTypeDataDialog::checkDataType(const QString &type, const QString &value, QTableWidgetItem *pItem)
+{
+    if (type == "number") {
+        bool ok;
+        value.toFloat(&ok);
+        if (ok) {
+            return true;
+        }
+        if (value.isEmpty()) {
+            return true;
+        }
+
+        QMessageBox::critical(this, "错误", "请输入数字!", QMessageBox::Ok);
+        pItem->setText("");
+        return false;
+    }
+    return true;
+}
+
 void UAVTypeDataDialog::on_addUAVTypeBtn_clicked()
 {
     QTableWidget *t = ui->uavTableWidget;
@@ -377,13 +396,18 @@ void UAVTypeDataDialog::on_uavTableWidget_cellChanged(int row, int column)
     QTableWidgetItem *h = table->horizontalHeaderItem(column);
     QString value = i->data(Qt::DisplayRole).toString();
     QString key = h->data(Qt::UserRole).toString();
-    if (row < m_uavs.size()) {
-        QtJson::JsonObject obj = m_uavs[row].toMap();
-        obj[key] = value;
-        m_uavs.replace(row, obj);
-        //如果修改无人机名称则更新combobox
-        if (column == 0) {
-            updateUAVComboBox();
+    QString type = h->data(MyDataTypeRole).toString();
+
+    if (checkDataType(type, value, i)) {
+
+        if (row < m_uavs.size()) {
+            QtJson::JsonObject obj = m_uavs[row].toMap();
+            obj[key] = value;
+            m_uavs.replace(row, obj);
+            //如果修改无人机名称则更新combobox
+            if (column == 0) {
+                updateUAVComboBox();
+            }
         }
     }
 }
@@ -396,8 +420,10 @@ void UAVTypeDataDialog::createTableHeader(const QtJson::JsonArray &array, QTable
         QtJson::JsonObject obj = var.toMap();
         QString key = obj["name"].toString();
         QString value = obj["description"].toString();
+        QString type = obj["type"].toString();
         QTableWidgetItem *temp = new QTableWidgetItem(value);
         temp->setData(Qt::UserRole, key);
+        temp->setData(MyDataTypeRole, type);
         table->setHorizontalHeaderItem(j++, temp);
     }
 }
@@ -410,10 +436,13 @@ void UAVTypeDataDialog::on_weaponTypeDataTableWidget_cellChanged(int row, int co
     QTableWidgetItem *h = t->horizontalHeaderItem(column);
     QString value = i->data(Qt::DisplayRole).toString();
     QString key = h->data(Qt::UserRole).toString();
-    if (row < m_weapons.size()) {
-        QtJson::JsonObject obj = m_weapons[row].toMap();
-        obj[key] = value;
-        m_weapons.replace(row, obj);
+    QString type = h->data(MyDataTypeRole).toString();
+    if (checkDataType(type, value, i)) {
+        if (row < m_weapons.size()) {
+            QtJson::JsonObject obj = m_weapons[row].toMap();
+            obj[key] = value;
+            m_weapons.replace(row, obj);
+        }
     }
 }
 
@@ -508,5 +537,23 @@ void UAVTypeDataDialog::on_delDetectionBtn_clicked()
         }
         uav["detectionEquipments"] = array;
         m_uavs.replace(index, uav);
+    }
+}
+
+void UAVTypeDataDialog::on_detectionTableWidget_cellChanged(int row, int column)
+{
+    QTableWidget *t = ui->detectionTableWidget;
+    QTableWidgetItem *i = t->item(row, column);
+    QTableWidgetItem *h = t->horizontalHeaderItem(column);
+    QString value = i->data(Qt::DisplayRole).toString();
+    QString key = h->data(Qt::UserRole).toString();
+    QString type = h->data(MyDataTypeRole).toString();
+    if (checkDataType(type, value, i)) {
+
+        if (row < m_detectionEqus.size()) {
+            QtJson::JsonObject obj = m_detectionEqus[row].toMap();
+            obj[key] = value;
+            m_detectionEqus.replace(row, obj);
+        }
     }
 }

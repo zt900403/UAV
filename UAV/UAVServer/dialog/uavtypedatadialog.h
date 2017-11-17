@@ -50,7 +50,14 @@ private slots:
 
     void on_delDetectionBtn_clicked();
 
+    void on_detectionTableWidget_cellChanged(int row, int column);
+
 private:
+
+    enum MyDataRoles {
+       MyDataTypeRole = Qt:: UserRole + 10,
+    };
+
     void createTableHeader(const QtJson::JsonArray &array,
                            QTableWidget *table, int columnCnt);
 
@@ -66,6 +73,7 @@ private:
     QString randomString2TableItem(QTableWidget *table, int row, int col);
     void addRow(QTableWidget *table, QtJson::JsonArray &array);
     void saveFile(const QString &filename);
+    bool checkDataType(const QString &type, const QString &value, QTableWidgetItem* pItem);
 
 private:
     Ui::UAVTypeDataDialog *ui;
