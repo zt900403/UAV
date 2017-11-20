@@ -11,5 +11,9 @@
         <file>images/icos/map48x48.ico</file>
         <file>images/icos/uavBtn.ico</file>
         <file>images/icos/weather.ico</file>
+        <file>images/icos/import.png</file>
+        <file>images/icos/export.png</file>
+        <file>images/icos/connected.png</file>
+        <file>images/icos/disconnected.png</file>
     </qresource>
 </RCC>

@@ -72,22 +72,22 @@ bool MainWindow::updateUavMetaDataGroup()
     QtJson::JsonArray uavs = result["uavs"].toList();
     instantiateUAVs(uavs);
 
-    QVectorIterator<UAV> i(m_uavs);
-    while(i.hasNext()) {
-        UAV u = i.next();
-        QString name = u.name();
-        QPixmap pixmap = u.pixmap();
-        QString desc = u.description();
+//    QVectorIterator<UAV> i(m_uavs);
+//    while(i.hasNext()) {
+//        UAV u = i.next();
+//        QString name = u.name();
+//        QPixmap pixmap = u.pixmap();
+//        QString desc = u.description();
 
-        QListWidgetItem *item= new QListWidgetItem(name);
-        QVariant i;
-        QVariant d;
-        i.setValue(pixmap);
-        d.setValue(desc);
-        item->setData(MyImgRole, i);
-        item->setData(MyDescRole, d);
-        ui->uavslistWidget->addItem(item);
-    }
+//        QListWidgetItem *item= new QListWidgetItem(name);
+//        QVariant i;
+//        QVariant d;
+//        i.setValue(pixmap);
+//        d.setValue(desc);
+//        item->setData(MyImgRole, i);
+//        item->setData(MyDescRole, d);
+//        ui->uavslistWidget->addItem(item);
+//    }
 
     QtJson::JsonArray weapons = result["weapons"].toList();
     instantiateWeapons(weapons);
@@ -95,7 +95,6 @@ bool MainWindow::updateUavMetaDataGroup()
     QtJson::JsonArray detections = result["detectionEquipments"].toList();
     instantiateDetections(detections);
 
-    listenServer();
     return true;
 }
 
@@ -269,6 +268,63 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     ui->uavStatusTabWidget->addTab(widget, title);
 }
 
+void MainWindow::addTag(const QString &name, const QString &x, const QString &y)
+{
+    QTableWidget *t = ui->tagTableWidget;
+    int rowCnt = t->rowCount();
+    for (int i = 0; i < rowCnt; ++i) {
+        QString tmp = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        if (tmp == name) {
+            QMessageBox::critical(this, "失败", "该名称已经存在!", QMessageBox::Ok);
+            return;
+        }
+    }
+
+    if ( !name.isEmpty() && !x.isEmpty() && !y.isEmpty()) {
+        int row = t->rowCount();
+        t->insertRow(row);
+        QTableWidgetItem *checkBoxItem = new QTableWidgetItem(name);
+        checkBoxItem->setCheckState(Qt::Unchecked);
+        t->setItem(row, 0, checkBoxItem);
+
+        QTableWidgetItem *itemX = new QTableWidgetItem(x);
+        QTableWidgetItem *itemY = new QTableWidgetItem(y);
+        t->setItem(row, 1, itemX);
+        t->setItem(row, 2, itemY);
+//        m_tags[name] = QPoint(x.toInt(), y.toInt());
+    }
+}
+
+void MainWindow::addPoint2TableWidget(const QString &x, const QString &y, QTableWidget *ptable)
+{
+    int row = ptable->rowCount();
+    ptable->insertRow(row);
+    QTableWidgetItem *itemX = new QTableWidgetItem(x);
+    QTableWidgetItem *itemY = new QTableWidgetItem(y);
+    ptable->setItem(row, 0, itemX);
+    ptable->setItem(row, 1, itemY);
+}
+
+void MainWindow::updateStatusBar()
+{
+    QString str = QString("无人机连接数量%1|").arg(m_idTabMap.size());
+    QMapIterator<int, QPoint> it(m_idPositionMap);
+    while(it.hasNext()) {
+        it.next();
+        str.append(QString("无人机%1坐标为(%2,%3)|")
+                   .arg(it.key())
+                   .arg(it.value().x())
+                   .arg(it.value().y()));
+    }
+    ui->statusbar->showMessage(str);
+}
+
+void MainWindow::closeListenServer()
+{
+    if (m_tcpserver->isListening())
+        m_tcpserver->close();
+}
+
 void MainWindow::setWeather(const QString &str, bool checked)
 {
     ui->gisView->setWeahter(str, checked);
@@ -297,8 +353,23 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     ui->gisView->setIdLastLocationMap(m_idPositionMap);
     if (!m_idTabMap.contains(id))
         addUAVStatusTab(id, u);
-    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
-    ui->statusbar->showMessage(str);
+//    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
+//    ui->statusbar->showMessage(str);
+    UAV uav = m_uavs[index];
+    name = name + "#" + QString::number(id);
+
+    QPixmap pixmap = uav.pixmap();
+    QString desc = uav.description();
+    QListWidgetItem *item= new QListWidgetItem(name);
+    QVariant i;
+    QVariant d;
+    i.setValue(pixmap);
+    d.setValue(desc);
+    item->setData(MyImgRole, i);
+    item->setData(MyDescRole, d);
+    ui->uavslistWidget->addItem(item);
+
+    updateStatusBar();
 }
 
 void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
@@ -332,6 +403,7 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
         ui->gisView->setIdYawMap(m_idYawMap);
         ui->gisView->viewport()->repaint();
     }
+    updateStatusBar();
 }
 
 void MainWindow::onCloseByClient(int id)
@@ -342,12 +414,29 @@ void MainWindow::onCloseByClient(int id)
         if (title.endsWith(QString::number(id))) {
             m_idTabMap.remove(id);
             m_idUAVStatusMap.remove(id);
+            m_idPositionMap.remove(id);
+            m_idOriginPositionMap.remove(id);
+            m_idYawMap.remove(id);
+
             ui->uavStatusTabWidget->removeTab(i);
+
+            ui->gisView->setIdLocationMap(m_idPositionMap);
+            ui->gisView->setIdYawMap(m_idYawMap);
+            ui->gisView->viewport()->repaint();
             break;
         }
     }
-    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
-    ui->statusbar->showMessage(str);
+
+    QListWidget *lp = ui->uavslistWidget;
+    int rows = lp->count();
+    for (int i = 0 ; i < rows; ++i) {
+        QListWidgetItem *item = lp->item(i);
+        QString name = item->data(Qt::DisplayRole).toString();
+        if (name.endsWith(QString::number(id))) {
+            delete lp->takeItem(lp->row(item));
+        }
+    }
+    updateStatusBar();
 }
 
 void MainWindow::onDetectionDeviceStatusChanged(int id, QString deviceName, bool checked)
@@ -369,15 +458,9 @@ void MainWindow::on_addPathPushButton_clicked()
         m_path.append(p);
 
         QTableWidget *t = ui->pathTableWidget;
-        int row = t->rowCount();
-        t->insertRow(row);
-        QTableWidgetItem *itemX = new QTableWidgetItem(x);
-        QTableWidgetItem *itemY = new QTableWidgetItem(y);
-        t->setItem(row, 0, itemX);
-        t->setItem(row, 1, itemY);
+        addPoint2TableWidget(x, y, t);
 
         ui->gisView->setPath(m_path);
-//        ui->gisView->update();
         ui->gisView->viewport()->repaint();
     }
 }
@@ -389,7 +472,6 @@ void MainWindow::on_delPathPushButton_clicked()
         m_path.remove(t->currentRow());
         t->removeRow(t->currentRow());
         ui->gisView->setPath(m_path);
-//        ui->gisView->update();
         ui->gisView->viewport()->repaint();
         t->setCurrentCell(-1, -1);
     }
@@ -398,32 +480,12 @@ void MainWindow::on_delPathPushButton_clicked()
 
 void MainWindow::on_addTagPushButton_clicked()
 {
-    QTableWidget *t = ui->tagTableWidget;
+
     QString name = ui->tagNameLineEdit->text();
     QString x = ui->tagXLineEdit->text();
     QString y = ui->tagYLineEdit->text();
-    int rowCnt = t->rowCount();
-    for (int i = 0; i < rowCnt; ++i) {
-        QString tmp = t->item(i, 0)->data(Qt::DisplayRole).toString();
-        if (tmp == name) {
-            QMessageBox::critical(this, "失败", "该名称已经存在!", QMessageBox::Ok);
-            return;
-        }
-    }
 
-    if ( !name.isEmpty() && !x.isEmpty() && !y.isEmpty()) {
-        int row = t->rowCount();
-        t->insertRow(row);
-        QTableWidgetItem *checkBoxItem = new QTableWidgetItem(name);
-        checkBoxItem->setCheckState(Qt::Unchecked);
-        t->setItem(row, 0, checkBoxItem);
-
-        QTableWidgetItem *itemX = new QTableWidgetItem(x);
-        QTableWidgetItem *itemY = new QTableWidgetItem(y);
-        t->setItem(row, 1, itemX);
-        t->setItem(row, 2, itemY);
-//        m_tags[name] = QPoint(x.toInt(), y.toInt());
-    }
+    addTag(name, x, y);
 }
 
 void MainWindow::on_delTagPushButton_clicked()
@@ -437,7 +499,6 @@ void MainWindow::on_delTagPushButton_clicked()
             m_tags.remove(name);
 
             ui->gisView->setTags(m_tags);
-//            ui->gisView->update();
             ui->gisView->viewport()->repaint();
         }
         t->removeRow(row);
@@ -496,30 +557,171 @@ void MainWindow::on_weatherBtn_triggered()
 
 void MainWindow::on_importTagsBtn_clicked()
 {
-
+    QString filename = FileSystem::openOpenDialog();
+    QString data = FileSystem::readFile(filename);
+    QTextStream in(&data);
+    QString line;
+    do {
+        line = in.readLine();
+        if (!line.isEmpty()) {
+            //跳过注释行
+            if (line[0] == '%')
+                continue;
+            QStringList list = line.split(" ");
+            if (list.size() < 3)
+                continue;
+            QString name = list[0];
+            QString x = list[1];
+            QString y = list[2];
+            addTag(name, x, y);
+        }
+    } while (!line.isNull());
 }
 
 void MainWindow::on_exportTagsBtn_clicked()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("保存文件"),
-                               "",
-                               tr("文本文件 (*.txt)"));
+    QString cache;
+    QTextStream stream(&cache);
+    QTextCodec *codec=QTextCodec::codecForName("UTF-8");
+    stream.setCodec(codec);
+    QString comment = codec->fromUnicode("%名称 x坐标 y坐标%" );
+    stream << comment << "\n";
+    QTableWidget *t = ui->tagTableWidget;
+    int row = t->rowCount();
+    for (int i = 0; i < row; ++i) {
+        QString name = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        name = codec->fromUnicode(name);
+        QString x = t->item(i, 1)->data(Qt::DisplayRole).toString();
+        QString y = t->item(i, 2)->data(Qt::DisplayRole).toString();
+        stream << name << " " << x << " " << y << "\n";
+    }
+    QString filename = FileSystem::openSaveDialog(this);
+    FileSystem::saveFile(filename, cache);
+}
 
-    if (QFile::exists(filename))
-    {
-        QFile::remove(filename);
+void MainWindow::on_addAirspaceBtn_clicked()
+{
+    QLineEdit *l1 = ui->airspaceXLineEdit;
+    QLineEdit *l2 = ui->airspaceYLineEdit;
+    QString x = l1->text();
+    QString y = l2->text();
+    if (!x.isEmpty() &&
+            !y.isEmpty()) {
+        QPoint p(x.toInt(), y.toInt());
+        m_airspace.append(p);
+
+        QTableWidget *t = ui->airspaceTableWidget;
+        addPoint2TableWidget(x, y, t);
+
+        ui->gisView->setAirspace(m_airspace);
+        ui->gisView->viewport()->repaint();
     }
-    QFile file(filename);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream stream(&file);
-        stream << "%名称 x坐标 y坐标%" << "\n";
-        QMapIterator<QString,QPoint> it(m_tags);
-        while(it.hasNext()) {
-            it.next();
-            stream << it.key() << " " << it.value().x() << " " << it.value().y() << "\n";
+}
+
+void MainWindow::on_delAirspaceBtn_clicked()
+{
+    QTableWidget *t = ui->airspaceTableWidget;
+    if (t->currentRow() != -1) {
+        m_airspace.remove(t->currentRow());
+        t->removeRow(t->currentRow());
+        ui->gisView->setAirspace(m_airspace);
+        ui->gisView->viewport()->repaint();
+        t->setCurrentCell(-1, -1);
+    }
+}
+
+void MainWindow::on_exportPathAirspaceBtn_clicked()
+{
+    QString cache;
+    QTextStream stream(&cache);
+    QTextCodec *codec=QTextCodec::codecForName("UTF-8");
+    stream.setCodec(codec);
+    QString pathPlan = codec->fromUnicode("%规划路径%" );
+    QString comment = codec->fromUnicode("%x坐标 y坐标 z坐标%" );
+    stream << comment << "\n";
+    stream << pathPlan << "\n";
+    QTableWidget *t = ui->pathTableWidget;
+    int row = t->rowCount();
+    for (int i = 0; i < row; ++i) {
+        QString x = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        QString y = t->item(i, 1)->data(Qt::DisplayRole).toString();
+        stream << x << " " << y << " " << "-65535" << "\n";
+    }
+
+    QString airspace = codec->fromUnicode("%可行空域%" );
+    stream << airspace << "\n";
+    t = ui->airspaceTableWidget;
+    row = t->rowCount();
+    for (int i = 0; i < row; ++i) {
+        QString x = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        QString y = t->item(i, 1)->data(Qt::DisplayRole).toString();
+        stream << x << " " << y << " " << "-65535" << "\n";
+    }
+
+    QString realPath = codec->fromUnicode("%实际路径%" );
+    stream << realPath << "\n";
+    t = ui->realPathTableWidget;
+    row = t->rowCount();
+    for (int i = 0; i < row; ++i) {
+        QString x = t->item(i, 0)->data(Qt::DisplayRole).toString();
+        QString y = t->item(i, 1)->data(Qt::DisplayRole).toString();
+        stream << x << " " << y << " " << "-65535" << "\n";
+    }
+    QString filename = FileSystem::openSaveDialog(this);
+    FileSystem::saveFile(filename, cache);
+}
+
+void MainWindow::on_importPathAirspaceBtn_clicked()
+{
+    QString filename = FileSystem::openOpenDialog();
+    QString data = FileSystem::readFile(filename);
+    QTextStream in(&data);
+
+    QVector<QPoint> *pStore = NULL;
+    QTableWidget *t = NULL;
+    QString line;
+    do {
+        line = in.readLine();
+        if (!line.isEmpty()) {
+            if (line == "%规划路径%") {
+                pStore = &m_path;
+                t = ui->pathTableWidget;
+            } else if (line == "%可行空域%") {
+                pStore = &m_airspace;
+                t = ui->airspaceTableWidget;
+            } else if (line == "%实际路径%") {
+                pStore = &m_realpath;
+                t = ui->realPathTableWidget;
+            }
+            //跳过注释行
+            if (line[0] == '%')
+                continue;
+
+            QStringList list = line.split(" ");
+            if (list.size() < 3)
+                continue;
+            QString x = list[0];
+            QString y = list[1];
+            QString z = list[2];
+            pStore->append(QPoint(x.toInt(), y.toInt()));
+            addPoint2TableWidget(x, y, t);
         }
-        file.flush();
-        file.close();
-        QMessageBox::information(this, "成功", "保存完成!", QMessageBox::Ok);
+    } while (!line.isNull());
+    ui->gisView->setPath(m_path);
+    ui->gisView->setAirspace(m_airspace);
+    ui->gisView->viewport()->repaint();
+}
+
+void MainWindow::on_openServerBtn_clicked(bool checked)
+{
+    if (!checked) {
+        listenServer();
+        ui->openServerBtn->setIcon(QIcon("://images/icos/connected.png"));
+        ui->openServerBtn->setText(tr("等待连接..."));
+    } else {
+        closeListenServer();
+        ui->openServerBtn->setIcon(QIcon("://images/icos/disconnected.png"));
+        ui->openServerBtn->setText(tr("开启连接"));
     }
+    ui->openServerBtn->setCheckable(!checked);
 }

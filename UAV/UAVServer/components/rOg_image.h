@@ -181,6 +181,9 @@ protected slots:
 
 public:
     void setWeahter(const QString &str, bool checked);
+    QVector<QPoint> airspace() const;
+    void setAirspace(const QVector<QPoint> &airspace);
+
 private:
 
     // Scene where the image is drawn
@@ -212,6 +215,7 @@ private:
 //    QPoint m_lastGisPosition;
     bool m_drawLine;
     QVector<QPoint> m_path;
+    QVector<QPoint> m_airspace;
     QMap<QString, QPoint> m_tags;
 //    int i;
     QString m_weather;

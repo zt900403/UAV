@@ -8,6 +8,7 @@
 #include <object/detectiondevice.h>
 #include "utils/json.h"
 #include <QVector>
+#include <QTableWidget>
 
 
 class QDir;
@@ -61,6 +62,17 @@ private slots:
 
     void on_exportTagsBtn_clicked();
 
+    void on_addAirspaceBtn_clicked();
+
+    void on_delAirspaceBtn_clicked();
+
+    void on_exportPathAirspaceBtn_clicked();
+
+    void on_importPathAirspaceBtn_clicked();
+
+
+    void on_openServerBtn_clicked(bool checked);
+
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
@@ -69,6 +81,10 @@ private:
     void instantiateDetections(const QtJson::JsonArray &detections);
     void listenServer();
     void addUAVStatusTab(int id, const UAVStatus &status);
+    void addTag(const QString &name, const QString &x, const QString &y);
+    void addPoint2TableWidget(const QString &x, const QString &y, QTableWidget *ptable);
+    void updateStatusBar();
+    void closeListenServer();
 public:
 
     void setWeather(const QString &str, bool checked);
@@ -88,6 +104,8 @@ private:
 //    QPointF m_UAVGisPostion;
 //    UAVStatus m_currentStatus;
     QVector<QPoint> m_path;
+    QVector<QPoint> m_airspace;
+    QVector<QPoint> m_realpath;
     QMap<QString, QPoint> m_tags;
     QString m_weatherInfo;
     bool m_isShowWeather;

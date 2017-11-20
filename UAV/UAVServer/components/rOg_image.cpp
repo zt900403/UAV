@@ -79,6 +79,16 @@ void rOg_image::setWeahter(const QString &str, bool checked)
     this->update();
 }
 
+QVector<QPoint> rOg_image::airspace() const
+{
+    return m_airspace;
+}
+
+void rOg_image::setAirspace(const QVector<QPoint> &airspace)
+{
+    m_airspace = airspace;
+}
+
 QMap<int, QPoint> rOg_image::idLastLocationMap() const
 {
     return m_idLastLocationMap;
@@ -365,10 +375,9 @@ void rOg_image::drawOnImage(QPainter* painter , QSize )
 
     QPainterPath path;
     QPolygon polygon;
-    polygon.append(QPoint(600, 600));
-    polygon.append(QPoint(680, 680));
-    polygon.append(QPoint(688, 799));
-    polygon.append(QPoint(654, 880));
+    for(int i = 0; i < m_airspace.size(); ++i) {
+        polygon.append(m_airspace[i]);
+    }
     path.addPolygon(polygon);
 
     QPen pen;

@@ -274,6 +274,11 @@ void MainDialog::closeEvent(QCloseEvent *event)
                                       0, 1 ) )
     {
     case 0:
+
+        if (m_timerId) {
+            killTimer(m_timerId);
+            m_timerId = 0;
+        }
         sendCloseSign();
         event->accept();
         break;

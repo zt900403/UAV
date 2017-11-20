@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QFileDialog>
+#include <QMessageBox>
 
 FileSystem::FileSystem()
 {
@@ -39,4 +41,49 @@ QDir FileSystem::directoryOf(const QString &subdir)
 #endif
     dir.cd(subdir);
     return dir;
+}
+
+QString FileSystem::openSaveDialog(QWidget *parent)
+{
+    QString filename = QFileDialog::getSaveFileName(parent, QObject::tr("保存文件"),
+                               "",
+                               QObject::tr("文本文件 (*.txt)"));
+
+    if (QFile::exists(filename))
+    {
+        QFile::remove(filename);
+    }
+
+    return filename;
+}
+
+void FileSystem::saveFile(const QString &filename, const QString &str)
+{
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << str;
+        file.flush();
+        file.close();
+        QMessageBox::information(NULL, "成功", "保存完成!", QMessageBox::Ok);
+    }
+}
+
+QString FileSystem::openOpenDialog(QWidget *parent)
+{
+    QString filename = QFileDialog::getOpenFileName(parent, QObject::tr("打开文件"),
+                               "",
+                               QObject::tr("文本文件 (*.txt)"));
+    return filename;
+}
+
+QString FileSystem::openFile(const QString &filename)
+{
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        QString all = in.readAll();
+        file.close();
+        return all;
+    }
 }
