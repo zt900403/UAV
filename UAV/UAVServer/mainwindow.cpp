@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tagXLineEdit->setValidator(portValidator);
     ui->tagYLineEdit->setValidator(portValidator);
 
-    m_normalPixmap = QPixmap("://images/icos/normal.ico").scaled(20, 20);
-    m_alertPixmap = QPixmap("://images/icos/alert.ico").scaled(20, 20);
+    m_normalPixmap = QPixmap("://images/icos/normal.ico").scaled(30, 30);
+    m_alertPixmap = QPixmap("://images/icos/alert.ico").scaled(30, 30);
     ui->statusbar->showMessage("无人机连接数量0|");
 }
 
