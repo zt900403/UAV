@@ -54,6 +54,7 @@ public:
     QVector<QString> detection() const;
     void setDetection(const QVector<QString> &detection);
 
+    QString getParametersDesc();
 private:
     float m_acceleration;
     QString m_description;

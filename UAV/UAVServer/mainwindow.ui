@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+   <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,2">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
@@ -227,7 +227,7 @@
             </layout>
            </item>
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3" stretch="3,1">
+            <layout class="QVBoxLayout" name="verticalLayout_3" stretch="5,1">
              <item>
               <widget class="QLabel" name="uavImageLabel">
                <property name="text">
@@ -239,15 +239,15 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="uavDescriptionLabel">
-               <property name="text">
-                <string>无人机描述</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-               <property name="wordWrap">
+              <widget class="QPlainTextEdit" name="uavParameterPlainTextEdit">
+               <property name="enabled">
                 <bool>true</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">#uavParameterPlainTextEdit {
+	border: none;
+	background-color: transparent;
+}</string>
                </property>
               </widget>
              </item>

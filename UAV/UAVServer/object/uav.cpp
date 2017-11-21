@@ -1,5 +1,6 @@
 #include "uav.h"
-
+#include <QTextStream>
+#include <QTextCodec>
 UAV::UAV(const QString &name,
          const QString &description,
          const QPixmap &pixmap,
@@ -144,6 +145,34 @@ QVector<QString> UAV::detection() const
 void UAV::setDetection(const QVector<QString> &detection)
 {
     m_detection = detection;
+}
+
+QString UAV::getParametersDesc()
+{
+    QString cache;
+    QTextStream out(&cache);
+//    QTextCodec *codec=QTextCodec::codecForName("UTF-8");
+//    out.setCodec(codec);
+    out << QObject::tr("名称: ") << this->name() << "\n"
+        << QObject::tr("自重(kg): ") << this->weight() << "\n"
+        << QObject::tr("航程(km): ") << this->voyage() << "\n"
+        << QObject::tr("航高(m): ") << this->flightHeight() << "\n"
+        << QObject::tr("续航(h): ") << this->flyEndurance() << "\n"
+        << QObject::tr("载荷(kg): ") << this->loadWeight() << "\n"
+        << QObject::tr("最高时速(km/h): ") << this->maxSpeed() << "\n"
+        << QObject::tr("提升加速度(km/s^2): ") << this->acceleration() << "\n"
+        << QObject::tr("描述: ") << this->description() << "\n";
+    out << QObject::tr("侦查设备:") << "\n";
+    for (int i = 0; i < m_detection.size(); ++i) {
+        out << m_detection[i] << "\n";
+    }
+    out << QObject::tr("武器系统:") << "\n";
+    QMapIterator<QString, int> it(m_weapon);
+    while(it.hasNext()) {
+        it.next();
+        out << it.key() << " : " << it.value() << "\n";
+    }
+    return cache;
 }
 
 QDataStream &operator<<(QDataStream &out, const UAV &uav)

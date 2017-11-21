@@ -24,12 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QString imageDir = FileSystem::directoryOf("images").absoluteFilePath("Europe_topic_image_Satellite_image.jpg");
     QImage image(imageDir);
 
-//    ui->gisView->setLastGisPosition(QPoint(500,500));
-//    ui->gisView->setGisPosition(QPoint(500, 500));
-//    m_UAVGisPostion.setX(500);
-//    m_UAVGisPostion.setY(500);
-
-//    ui->gisView->setYaw(-46);
     ui->gisView->setImage(image);
     ui->gisView->setBackgroundBrush(QBrush(QColor(0x7F,0x7F,0x7F)));
     ui->gisView->update();
@@ -43,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tagXLineEdit->setValidator(portValidator);
     ui->tagYLineEdit->setValidator(portValidator);
 
-    ui->statusbar->showMessage("无人机连接数量0.");
+    m_normalPixmap = QPixmap("://images/icos/normal.ico").scaled(20, 20);
+    m_alertPixmap = QPixmap("://images/icos/alert.ico").scaled(20, 20);
+    ui->statusbar->showMessage("无人机连接数量0|");
 }
 
 
@@ -71,24 +67,6 @@ bool MainWindow::updateUavMetaDataGroup()
 
     QtJson::JsonArray uavs = result["uavs"].toList();
     instantiateUAVs(uavs);
-
-//    QVectorIterator<UAV> i(m_uavs);
-//    while(i.hasNext()) {
-//        UAV u = i.next();
-//        QString name = u.name();
-//        QPixmap pixmap = u.pixmap();
-//        QString desc = u.description();
-
-//        QListWidgetItem *item= new QListWidgetItem(name);
-//        QVariant i;
-//        QVariant d;
-//        i.setValue(pixmap);
-//        d.setValue(desc);
-//        item->setData(MyImgRole, i);
-//        item->setData(MyDescRole, d);
-//        ui->uavslistWidget->addItem(item);
-//    }
-
     QtJson::JsonArray weapons = result["weapons"].toList();
     instantiateWeapons(weapons);
 
@@ -98,13 +76,11 @@ bool MainWindow::updateUavMetaDataGroup()
     return true;
 }
 
-void MainWindow::labelDisplayImage(QLabel *label, const QPixmap &pixmap)//const QString &filename)
+void MainWindow::labelDisplayImage(QLabel *label, const QPixmap &pixmap)
 {
-//    QString f = FileSystem::directoryOf("images/uavs").absoluteFilePath(filename);
-//    QPixmap p(f);
     QPixmap p;
     if (!pixmap.isNull()) {
-        p = pixmap.scaled(150, 150);
+        p = pixmap.scaled(100, 100);
     }
     label->setPixmap(p);
 }
@@ -251,15 +227,42 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     hl6->addWidget(l6);
     hl6->addWidget(altitude);
 
-    QVBoxLayout *vLayout = new QVBoxLayout();
-    vLayout->addLayout(hl1);
-    vLayout->addLayout(hl2);
-    vLayout->addLayout(hl3);
-    vLayout->addLayout(hl4);
-    vLayout->addLayout(hl5);
-    vLayout->addLayout(hl6);
+    QVBoxLayout *vLayout1 = new QVBoxLayout();
+    vLayout1->addLayout(hl1);
+    vLayout1->addLayout(hl2);
+    vLayout1->addLayout(hl3);
+    vLayout1->addLayout(hl4);
+//    vLayout1->addLayout(hl5);
+//    vLayout1->addLayout(hl6);
 
-    widget->setLayout(vLayout);
+    QHBoxLayout *hl7 = new QHBoxLayout();
+    QLabel *l7 = new QLabel(tr("高度报警:"));
+    QLabel *l71 = new QLabel();
+    l71->setPixmap(m_normalPixmap);
+    l71->setObjectName("altitudeWarning");
+    hl7->addWidget(l7);
+    hl7->addWidget(l71);
+
+    QHBoxLayout *hl8 = new QHBoxLayout();
+    QLabel *l8 = new QLabel(tr("作业范围报警:"));
+    QLabel *l81 = new QLabel();
+    l81->setObjectName("workingRangeWarning");
+    l81->setPixmap(m_normalPixmap);
+    hl8->addWidget(l8);
+    hl8->addWidget(l81);
+
+    QVBoxLayout *vLayout2 = new QVBoxLayout();
+    vLayout2->addItem(new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    vLayout2->addLayout(hl5);
+    vLayout2->addLayout(hl6);
+    vLayout2->addLayout(hl7);
+    vLayout2->addLayout(hl8);
+    vLayout2->addItem(new QSpacerItem(20,10, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+    QHBoxLayout *topHBoxLayout = new QHBoxLayout();
+    topHBoxLayout->addLayout(vLayout1);
+    topHBoxLayout->addLayout(vLayout2);
+    widget->setLayout(topHBoxLayout);
 
     QString title = m_uavs[status.index()].name();
     title += "#";
@@ -291,7 +294,6 @@ void MainWindow::addTag(const QString &name, const QString &x, const QString &y)
         QTableWidgetItem *itemY = new QTableWidgetItem(y);
         t->setItem(row, 1, itemX);
         t->setItem(row, 2, itemY);
-//        m_tags[name] = QPoint(x.toInt(), y.toInt());
     }
 }
 
@@ -338,7 +340,8 @@ void MainWindow::on_uavslistWidget_itemClicked(QListWidgetItem *item)
     QVariant i = item->data(MyImgRole);
     QVariant d = item->data(MyDescRole);
 
-    ui->uavDescriptionLabel->setText(d.toString());
+//    ui->uavDescriptionLabel->setText(d.toString());
+    ui->uavParameterPlainTextEdit->setPlainText(d.toString());
     labelDisplayImage(ui->uavImageLabel, i.value<QPixmap>());
 }
 
@@ -359,7 +362,8 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     name = name + "#" + QString::number(id);
 
     QPixmap pixmap = uav.pixmap();
-    QString desc = uav.description();
+    QString desc = uav.getParametersDesc();
+
     QListWidgetItem *item= new QListWidgetItem(name);
     QVariant i;
     QVariant d;
@@ -384,7 +388,7 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
         w->findChild<QLineEdit*>("acc")->setText(QString::number(status.accelerator()));
         w->findChild<QLineEdit*>("airSpeed")->setText(QString::number(status.airSpeed()));
         w->findChild<QLineEdit*>("altitude")->setText(QString::number(status.altitude()));
-//        m_currentStatus = status;
+
 
         // 更新位置
         QPoint velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
@@ -392,12 +396,22 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
         QPoint tmp = m_idPositionMap[id];
         tmp += velocity / 100;
         m_idPositionMap[id] = tmp;
-//        m_idPositionMap[id] += velocity / 100;
 
-//        qDebug()<< velocity.x()<< " , " << velocity.y() << " , yaw: " <<  m_currentStatus.yaw() ;
-//        ui->gisView->setGisPosition(m_UAVGisPostion.toPoint());
-//        ui->gisView->setYaw(m_currentStatus.yaw());
-//        ui->gisView->update();
+        QLabel* workingRangeWarning =  w->findChild<QLabel*>("workingRangeWarning");
+        QRect workingRange = ui->gisView->getWorkingRange();
+        if (workingRange.contains(tmp)) {
+            workingRangeWarning->setPixmap(m_normalPixmap);
+        } else {
+            workingRangeWarning->setPixmap(m_alertPixmap);
+        }
+
+        QLabel* altitudeWarning = w->findChild<QLabel*>("altitudeWarning");
+        if (status.altitude() < m_uavs[status.index()].flightHeight()) {
+            altitudeWarning->setPixmap(m_normalPixmap);
+        } else {
+            altitudeWarning->setPixmap(m_alertPixmap);
+        }
+
         m_idYawMap[id] = status.yaw();
         ui->gisView->setIdLocationMap(m_idPositionMap);
         ui->gisView->setIdYawMap(m_idYawMap);

@@ -109,6 +109,8 @@ private:
     QMap<QString, QPoint> m_tags;
     QString m_weatherInfo;
     bool m_isShowWeather;
+    QPixmap m_normalPixmap;
+    QPixmap m_alertPixmap;
 };
 
 #endif // MAINWINDOW_H

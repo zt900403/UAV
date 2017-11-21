@@ -183,6 +183,7 @@ public:
     void setWeahter(const QString &str, bool checked);
     QVector<QPoint> airspace() const;
     void setAirspace(const QVector<QPoint> &airspace);
+    QRect getWorkingRange();
 
 private:
 

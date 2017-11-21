@@ -15,5 +15,7 @@
         <file>images/icos/export.png</file>
         <file>images/icos/connected.png</file>
         <file>images/icos/disconnected.png</file>
+        <file>images/icos/alert.ico</file>
+        <file>images/icos/normal.ico</file>
     </qresource>
 </RCC>

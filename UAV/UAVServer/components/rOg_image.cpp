@@ -89,6 +89,11 @@ void rOg_image::setAirspace(const QVector<QPoint> &airspace)
     m_airspace = airspace;
 }
 
+QRect rOg_image::getWorkingRange()
+{
+    return pixmap.rect();
+}
+
 QMap<int, QPoint> rOg_image::idLastLocationMap() const
 {
     return m_idLastLocationMap;
