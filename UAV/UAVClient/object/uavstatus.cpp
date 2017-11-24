@@ -2,7 +2,7 @@
 
 UAVStatus::UAVStatus(float roll,
                      float yaw,
-                     float pinch,
+                     float pitch,
                      float accelerator,
                      float airSpeed,
                      float altitude,
@@ -13,7 +13,7 @@ UAVStatus::UAVStatus(float roll,
                      const QMap<QString, int> &weapon)
     : m_roll(roll)
     , m_yaw(yaw)
-    , m_pinch(pinch)
+    , m_pitch(pitch)
     , m_accelerator(accelerator)
     , m_airSpeed(airSpeed)
     , m_altitude(altitude)
@@ -46,14 +46,14 @@ void UAVStatus::setYaw(float yaw)
     m_yaw = yaw;
 }
 
-float UAVStatus::pinch() const
+float UAVStatus::pitch() const
 {
-    return m_pinch;
+    return m_pitch;
 }
 
-void UAVStatus::setPinch(float pinch)
+void UAVStatus::setpitch(float pitch)
 {
-    m_pinch = pinch;
+    m_pitch = pitch;
 }
 
 float UAVStatus::accelerator() const
@@ -139,7 +139,7 @@ void UAVStatus::setIndex(int index)
 QDataStream &operator<<(QDataStream &out, const UAVStatus &status)
 {
     out << status.roll()
-        << status.pinch()
+        << status.pitch()
         << status.yaw()
         << status.accelerator()
         << status.airSpeed()
@@ -155,7 +155,7 @@ QDataStream &operator<<(QDataStream &out, const UAVStatus &status)
 QDataStream &operator>>(QDataStream &in, UAVStatus &status)
 {
     float roll;
-    float pinch;
+    float pitch;
     float yaw;
     float accelerator;
     float airspeed;
@@ -167,7 +167,7 @@ QDataStream &operator>>(QDataStream &in, UAVStatus &status)
     QMap<QString, int> weapon;
 
     in >> roll
-            >> pinch
+            >> pitch
             >> yaw
             >> accelerator
             >> airspeed
@@ -179,7 +179,7 @@ QDataStream &operator>>(QDataStream &in, UAVStatus &status)
             >> weapon;
     status = UAVStatus(roll,
                        yaw,
-                       pinch,
+                       pitch,
                        accelerator,
                        airspeed,
                        altitude,

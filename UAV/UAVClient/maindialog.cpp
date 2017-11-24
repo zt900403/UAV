@@ -102,7 +102,7 @@ void MainDialog::timerEvent(QTimerEvent *event)
     float climbRate = 0.0f;
 //    pressure = 2.0f * sin(m_realTime / 20.0f);
 
-    m_Status_roll = 180.0f * sin(m_realTime / 10.0f);
+//    m_Status_roll = 180.0f * sin(m_realTime / 10.0f);
 //    heading = 360.0f * sin(m_realTime / 40.0f);
     //float horizontalSpeed;
     float speeddelta = m_realTime / 100.0f* (ui->acceleratorSlider->value()-50);

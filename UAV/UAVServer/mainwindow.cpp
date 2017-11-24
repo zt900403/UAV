@@ -39,13 +39,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_normalPixmap = QPixmap("://images/icos/normal.ico").scaled(30, 30);
     m_alertPixmap = QPixmap("://images/icos/alert.ico").scaled(30, 30);
+    ui->workspaceWarningLabel->setPixmap(m_normalPixmap);
+    ui->altitudeWarningLabel->setPixmap(m_normalPixmap);
     ui->statusbar->showMessage("无人机连接数量0|");
+
+    m_pathSamplingTimer = startTimer(5000);
 }
 
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    if (m_pathSamplingTimer) killTimer(m_pathSamplingTimer);
 }
 
 bool MainWindow::updateUavMetaDataGroup()
@@ -174,6 +179,15 @@ void MainWindow::listenServer()
     }
 }
 
+void MainWindow::addUAVStatusComboxItem(int id, const UAVStatus &status)
+{
+    QString title = m_uavs[status.index()].name();
+    title += "#";
+    title += QString::number(id);
+    ui->uavStatusComboBox->addItem(title);
+}
+
+/*
 void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
 {
     QWidget *widget = new QWidget();
@@ -183,20 +197,20 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     QLabel *l4 = new QLabel(tr("油门:"));
     QLabel *l5 = new QLabel(tr("空速:"));
     QLabel *l6 = new QLabel(tr("高度:"));
-    QLineEdit *pinch = new QLineEdit(QString::number(status.pinch()));
+    QLineEdit *pitch = new QLineEdit(QString::number(status.pitch()));
     QLineEdit *roll = new QLineEdit(QString::number(status.roll()));
     QLineEdit *yaw = new QLineEdit(QString::number(status.yaw()));
     QLineEdit *acc = new QLineEdit(QString::number(status.accelerator()));
     QLineEdit *airSpeed = new QLineEdit(QString::number(status.airSpeed()));
     QLineEdit *altitude = new QLineEdit(QString::number(status.altitude()));
 
-    pinch->setObjectName("pinch");
+    pitch->setObjectName("pitch");
     roll->setObjectName("roll");
     yaw->setObjectName("yaw");
     acc->setObjectName("acc");
     airSpeed->setObjectName("airSpeed");
     altitude->setObjectName("altitude");
-    pinch->setDisabled(true);
+    pitch->setDisabled(true);
     roll->setDisabled(true);
     yaw->setDisabled(true);
     acc->setDisabled(true);
@@ -205,7 +219,7 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
 
     QHBoxLayout *hl1 = new QHBoxLayout();
     hl1->addWidget(l1);
-    hl1->addWidget(pinch);
+    hl1->addWidget(pitch);
 
     QHBoxLayout *hl2 = new QHBoxLayout();
     hl2->addWidget(l2);
@@ -270,7 +284,7 @@ void MainWindow::addUAVStatusTab(int id, const UAVStatus &status)
     m_idTabMap[id] = widget;
     ui->uavStatusTabWidget->addTab(widget, title);
 }
-
+*/
 void MainWindow::addTag(const QString &name, const QString &x, const QString &y)
 {
     QTableWidget *t = ui->tagTableWidget;
@@ -309,7 +323,7 @@ void MainWindow::addPoint2TableWidget(const QString &x, const QString &y, QTable
 
 void MainWindow::updateStatusBar()
 {
-    QString str = QString("无人机连接数量%1|").arg(m_idTabMap.size());
+    QString str = QString("无人机连接数量%1|").arg(m_idUAVStatusMap.size());
     QMapIterator<int, QPoint> it(m_idPositionMap);
     while(it.hasNext()) {
         it.next();
@@ -325,6 +339,38 @@ void MainWindow::closeListenServer()
 {
     if (m_tcpserver->isListening())
         m_tcpserver->close();
+}
+
+void MainWindow::pathSampling()
+{
+    QMapIterator<int, QPoint> it(m_idPositionMap);
+    while(it.hasNext()) {
+        it.next();
+        int id = it.key();
+        QString *cache = m_pathCache[id];
+        cache->append(QString::number(m_idPositionMap[id].x()));
+        cache->append(" ");
+        cache->append(QString::number(m_idPositionMap[id].y()));
+        cache->append(" ");
+        cache->append("-65535");
+        cache->append("\n");
+    }
+}
+
+void MainWindow::savePathSampling()
+{
+    QMapIterator<int, QString*> it(m_pathCache);
+    while (it.hasNext()) {
+        it.next();
+        int id = it.key();
+        QString filename = m_uavs[m_idUAVStatusMap[id].index()].name();
+        filename = filename + "#" + QString::number(id) + ".txt";
+
+        filename = FileSystem::directoryOf("data").absoluteFilePath(filename);
+        FileSystem::saveFile(filename, *it.value());
+    }
+    qDeleteAll(m_pathCache);
+    m_pathCache.clear();
 }
 
 void MainWindow::setWeather(const QString &str, bool checked)
@@ -354,17 +400,17 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     m_idYawMap[id] = 0;
     m_idUAVStatusMap[id] = u;
     ui->gisView->setIdLastLocationMap(m_idPositionMap);
-    if (!m_idTabMap.contains(id))
-        addUAVStatusTab(id, u);
-//    QString str = QString("无人机连接数量%1.").arg(m_idTabMap.size());
-//    ui->statusbar->showMessage(str);
-    UAV uav = m_uavs[index];
-    name = name + "#" + QString::number(id);
 
+    QString title = name + "#" + QString::number(id);
+
+    if(ui->uavStatusComboBox->findText(title) == -1)
+        addUAVStatusComboxItem(id, u);
+
+    UAV uav = m_uavs[index];
     QPixmap pixmap = uav.pixmap();
     QString desc = uav.getParametersDesc();
 
-    QListWidgetItem *item= new QListWidgetItem(name);
+    QListWidgetItem *item= new QListWidgetItem(title);
     QVariant i;
     QVariant d;
     i.setValue(pixmap);
@@ -373,31 +419,49 @@ void MainWindow::onCreateUAV(int id, int index, QString name)
     item->setData(MyDescRole, d);
     ui->uavslistWidget->addItem(item);
 
+    m_pathCache[id] = new QString();
+
     updateStatusBar();
 }
 
 void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
 {
+
+    // 更新位置
+    QPoint velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
+                     -status.airSpeed()*cos(status.yaw() * 3.1415926 / 180));
+    QPoint tmp = m_idPositionMap[id];
+    tmp += velocity / 100;
+    m_idPositionMap[id] = tmp;
+    m_idYawMap[id] = status.yaw();
+    ui->gisView->setIdLocationMap(m_idPositionMap);
+    ui->gisView->setIdYawMap(m_idYawMap);
+    ui->gisView->viewport()->repaint();
+
     m_idUAVStatusMap[id] = status;
-    if (m_idTabMap.contains(id)) {
+    QString title = m_uavs[status.index()].name();
+    title += "#";
+    title += QString::number(id);
+    if (ui->uavStatusComboBox->currentText() == title) {
+        /*
         QWidget *w = m_idTabMap[id];
 
-        w->findChild<QLineEdit*>("pinch")->setText(QString::number(status.pinch()));
+        w->findChild<QLineEdit*>("pitch")->setText(QString::number(status.pitch()));
         w->findChild<QLineEdit*>("roll")->setText(QString::number(status.roll()));
         w->findChild<QLineEdit*>("yaw")->setText(QString::number(status.yaw()));
         w->findChild<QLineEdit*>("acc")->setText(QString::number(status.accelerator()));
         w->findChild<QLineEdit*>("airSpeed")->setText(QString::number(status.airSpeed()));
         w->findChild<QLineEdit*>("altitude")->setText(QString::number(status.altitude()));
+        */
 
+        ui->pitchLineEdit->setText(QString::number(status.pitch()));
+        ui->rollLineEdit->setText(QString::number(status.roll()));
+        ui->yawLineEdit->setText(QString::number(status.yaw()));
+        ui->accLineEdit->setText(QString::number(status.accelerator()));
+        ui->airspeedLineEdit->setText(QString::number(status.airSpeed()));
+        ui->altitudeLineEdit->setText(QString::number(status.altitude()));
 
-        // 更新位置
-        QPoint velocity(status.airSpeed()*sin(status.yaw() * 3.1415926 / 180),
-                         -status.airSpeed()*cos(status.yaw() * 3.1415926 / 180));
-        QPoint tmp = m_idPositionMap[id];
-        tmp += velocity / 100;
-        m_idPositionMap[id] = tmp;
-
-        QLabel* workingRangeWarning =  w->findChild<QLabel*>("workingRangeWarning");
+        QLabel* workingRangeWarning = ui->workspaceWarningLabel;
         QRect workingRange = ui->gisView->getWorkingRange();
         if (workingRange.contains(tmp)) {
             workingRangeWarning->setPixmap(m_normalPixmap);
@@ -405,28 +469,27 @@ void MainWindow::onUpdateUAVStatus(int id, qint64 frameNum, UAVStatus status )
             workingRangeWarning->setPixmap(m_alertPixmap);
         }
 
-        QLabel* altitudeWarning = w->findChild<QLabel*>("altitudeWarning");
+        QLabel* altitudeWarning = ui->altitudeWarningLabel;
         if (status.altitude() < m_uavs[status.index()].flightHeight()) {
             altitudeWarning->setPixmap(m_normalPixmap);
         } else {
             altitudeWarning->setPixmap(m_alertPixmap);
         }
 
-        m_idYawMap[id] = status.yaw();
-        ui->gisView->setIdLocationMap(m_idPositionMap);
-        ui->gisView->setIdYawMap(m_idYawMap);
-        ui->gisView->viewport()->repaint();
+
     }
+
     updateStatusBar();
 }
 
 void MainWindow::onCloseByClient(int id)
 {
+    /*
     int len = ui->uavStatusTabWidget->count();
     for (int i = 0; i < len; ++i) {
         QString title = ui->uavStatusTabWidget->tabText(i);
         if (title.endsWith(QString::number(id))) {
-            m_idTabMap.remove(id);
+//            m_idTabMap.remove(id);
             m_idUAVStatusMap.remove(id);
             m_idPositionMap.remove(id);
             m_idOriginPositionMap.remove(id);
@@ -439,6 +502,15 @@ void MainWindow::onCloseByClient(int id)
             ui->gisView->viewport()->repaint();
             break;
         }
+    }
+    */
+    UAVStatus status = m_idUAVStatusMap[id];
+    QString title = m_uavs[status.index()].name();
+    title += "#";
+    title += QString::number(id);
+    int index = ui->uavStatusComboBox->findText(title);
+    if (index != -1) {
+        ui->uavStatusComboBox->removeItem(index);
     }
 
     QListWidget *lp = ui->uavslistWidget;
@@ -738,4 +810,19 @@ void MainWindow::on_openServerBtn_clicked(bool checked)
         ui->openServerBtn->setText(tr("开启连接"));
     }
     ui->openServerBtn->setCheckable(!checked);
+}
+
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    QMainWindow::timerEvent(event);
+
+    if (event->timerId() == m_pathSamplingTimer) {
+        pathSampling();
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    savePathSampling();
+    event->accept();
 }

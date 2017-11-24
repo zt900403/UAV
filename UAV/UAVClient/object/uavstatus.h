@@ -9,7 +9,7 @@ class UAVStatus
 public:
     UAVStatus(float roll = 0.0f,
               float yaw = 0.0f,
-              float pinch = 0.0f,
+              float pitch = 0.0f,
               float accelerator = 0.0f,
               float airSpeed = 0.0f,
               float altitude = 0.0f,
@@ -24,8 +24,8 @@ public:
     float yaw() const;
     void setYaw(float yaw);
 
-    float pinch() const;
-    void setPinch(float pinch);
+    float pitch() const;
+    void setpitch(float pitch);
 
     float accelerator() const;
     void setAccelerator(float accelerator);
@@ -54,7 +54,7 @@ public:
 private:
     float m_roll;
     float m_yaw;
-    float m_pinch;
+    float m_pitch;
     float m_accelerator;
     float m_airSpeed;
     float m_altitude;

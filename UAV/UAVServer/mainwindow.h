@@ -72,7 +72,9 @@ private slots:
 
 
     void on_openServerBtn_clicked(bool checked);
-
+protected:
+    void timerEvent(QTimerEvent *event);
+    void closeEvent(QCloseEvent *event);
 private:
     bool updateUavMetaDataGroup();
     void labelDisplayImage(QLabel *label, const QPixmap &pixmap); // const QString &filename);
@@ -80,12 +82,16 @@ private:
     void instantiateWeapons(const QtJson::JsonArray &weapons);
     void instantiateDetections(const QtJson::JsonArray &detections);
     void listenServer();
-    void addUAVStatusTab(int id, const UAVStatus &status);
+//    void addUAVStatusTab(int id, const UAVStatus &status);
+    void addUAVStatusComboxItem(int id, const UAVStatus &status);
     void addTag(const QString &name, const QString &x, const QString &y);
     void addPoint2TableWidget(const QString &x, const QString &y, QTableWidget *ptable);
     void updateStatusBar();
     void closeListenServer();
+    void pathSampling();
+    void savePathSampling();
 public:
+
 
     void setWeather(const QString &str, bool checked);
 
@@ -100,7 +106,7 @@ private:
     QMap<int, QPoint> m_idOriginPositionMap;
     QMap<int, QPoint> m_idPositionMap;
     QMap<int, int> m_idYawMap;
-    QMap<int, QWidget*> m_idTabMap;
+//    QMap<int, QWidget*> m_idTabMap;
 //    QPointF m_UAVGisPostion;
 //    UAVStatus m_currentStatus;
     QVector<QPoint> m_path;
@@ -111,6 +117,7 @@ private:
     bool m_isShowWeather;
     QPixmap m_normalPixmap;
     QPixmap m_alertPixmap;
+    int m_pathSamplingTimer;
+    QMap<int, QString*> m_pathCache;
 };
-
 #endif // MAINWINDOW_H
