@@ -6,16 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
+    <width>731</width>
     <height>682</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>UVAClient</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="2,1">
+  <layout class="QHBoxLayout" name="horizontalLayout_16">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_7" stretch="2,1">
+    <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,2,1">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QPushButton" name="launchBtn">
+         <property name="text">
+          <string>起飞</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="landingBtn">
+         <property name="text">
+          <string>降落</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item>
       <widget class="WidgetPFD" name="widgetPFD" native="true"/>
      </item>
