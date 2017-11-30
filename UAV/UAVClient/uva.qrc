@@ -37,5 +37,7 @@
         <file>images/scout/radar.png</file>
         <file>images/aircraft_controller/panel.png</file>
         <file>images/aircraft_controller/smallredball.png</file>
+        <file>images/ico/landing.png</file>
+        <file>images/ico/launch.png</file>
     </qresource>
 </RCC>

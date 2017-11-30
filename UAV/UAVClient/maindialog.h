@@ -61,6 +61,10 @@ private slots:
     void onConnectionClosed();
     void updateWidgets();
     void error();
+    void on_launchBtn_clicked();
+
+    void on_landingBtn_clicked();
+
 public:
     void connectToHost();
 private:

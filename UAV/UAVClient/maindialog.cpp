@@ -428,3 +428,17 @@ void MainDialog::onRadarBtnChanged(bool checked)
     }
 }
 
+
+void MainDialog::on_launchBtn_clicked()
+{
+    ui->launchBtn->setDisabled(true);
+    ui->landingBtn->setEnabled(true);
+    connectToHost();
+}
+
+void MainDialog::on_landingBtn_clicked()
+{
+    ui->landingBtn->setDisabled(true);
+    ui->launchBtn->setEnabled(true);
+    closeConnection();
+}
